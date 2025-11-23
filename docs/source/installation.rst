@@ -1,12 +1,17 @@
 Installation
 ============
 
-You can install the development version of **pyramid-learn** from GitHub with:
+You can install the development version of **midlearn** from GitHub with:
 
    .. code:: console
 
-      pip install git+https://github.com/ryo-asashi/pyramid-learn.git
+      pip install git+https://github.com/ryo-asashi/midlearn.git
 
+or from PyPI:
+
+   .. code:: console
+
+      pip install midlearn
 
 Requirements
 ------------

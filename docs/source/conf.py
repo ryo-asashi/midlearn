@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT_PATH / "src"))
 
 # Project information
 
-project = "pyramid-learn"
+project = "midlearn"
 author = "Ryoichi Asashiba"
 copyright = f"{datetime.datetime.now().year}, Ryoichi Asashiba"
 version = (ROOT_PATH / "VERSION.txt").read_text(encoding="utf-8").strip()

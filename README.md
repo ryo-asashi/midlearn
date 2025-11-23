@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.ipynb. Please edit that file -->
 
-# pyramid-learn <img src="docs/logo/logo_hex.png" align="right" height="138"/>
+# midlearn <img src="docs/logo/logo_hex.png" align="right" height="138"/>
 
 A [{rpy2}](https://rpy2.github.io/doc/latest/html/)-based Python wrapper for the [{midr}](https://ryo-asashi.github.io/midr/) R package to explain black-box models, with a [{scikit-learn}](https://scikit-learn.org/stable/) compatible API.
 
@@ -14,7 +14,7 @@ The theoretical foundations of MID are described in Iwasawa & Matsumori (2025) \
 You can install the package directly from GitHub:
 
 ```bash
-pip install git+https://github.com/ryo-asashi/pyramid-learn.git
+pip install git+https://github.com/ryo-asashi/midlearn.git
 ```
 
 ## Features
@@ -39,7 +39,7 @@ install.packages('midr')
 
 ## Quick Start
 
-Here’s a basic example of how to use **pyramid-learn** (namespace: **midlearn**) to explain a trained LightGBM model.
+Here’s a basic example of how to use **midlearn** to explain a trained LightGBM model.
 
 
 ```python
