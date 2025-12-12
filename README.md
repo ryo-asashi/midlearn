@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.ipynb. Please edit that file -->
 
-# midlearn <img src="docs/logo/logo_hex.png" align="right" height="138"/>
+# midlearn <img src="docs/logo/logo.svg" align="right" height="138"/>
 
 A [{rpy2}](https://rpy2.github.io/doc/latest/html/)-based Python wrapper for the [{midr}](https://ryo-asashi.github.io/midr/) R package to explain black-box models, with a [{scikit-learn}](https://scikit-learn.org/stable/) compatible API.
 
