@@ -51,9 +51,9 @@ templates_path = ["_templates"]
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "includehidden": False,
-    "logo_only": True,
+    #"logo_only": True,
 }
-html_logo = "../logo/logo.svg"
+#html_logo = "../logo/logo.svg"
 html_favicon = "../logo/logo.svg"
 html_js_files = ["custom.js"]
 html_static_path = ["_static"]
