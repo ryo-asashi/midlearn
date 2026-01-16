@@ -70,7 +70,7 @@ def _call_r_interpret(
     na_action='na.omit',
     encoding_digits=3,
     use_catchall=False,
-    max_ncol=10000,
+    max_nelements=1e09,
     **kwargs
 ) -> object:
     """ Wrapper function for midr::interpret.default() """
@@ -91,8 +91,8 @@ def _call_r_interpret(
         'singular.ok': singular_ok,
         'na.action': na_action,
         'encoding.digits': encoding_digits,
-        'use_catchall': use_catchall,
-        'max.ncol': max_ncol,
+        'use.catchall': use_catchall,
+        'max.nelements': max_nelements,
         **kwargs
     }
     try:

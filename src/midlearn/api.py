@@ -33,7 +33,7 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         encoding_digits: int | None = 3,
         use_catchall: bool = False,
         catchall: str = '(others)',
-        max_ncol: int | None = 10000,
+        max_nelements: int | None = 1e+09,
         nil: float = 1e-07,
         tol: float = 1e-07,
         **kwargs
@@ -98,9 +98,9 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         catchall : str, optional
             The catchall level string to use when `use_catchall=True`.
             Corresponds to the 'catchall' argument in R. Defaults to '(others)'.
-        max_ncol : int or None, optional
-            The maximum number of columns of the design matrix.
-            Corresponds to the 'max.ncol' argument in R. Defaults to 10000.
+        max_nelements : int or None, optional
+            The maximum number of elements of the design matrix.
+            Corresponds to the 'max.nelements' argument in R (midr >= 0.5.3). Defaults to 1e+09.
         nil : float, optional
             A threshold for the intercept and coefficients to be treated as zero.
             Corresponds to the 'nil' argument in R. Defaults to 1e-07.
@@ -129,7 +129,7 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         self.encoding_digits = encoding_digits
         self.use_catchall = use_catchall
         self.catchall = catchall
-        self.max_ncol = max_ncol
+        self.max_nelements = max_nelements
         self.nil = nil
         self.tol = tol
         self.kwargs = kwargs
@@ -180,7 +180,7 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
             encoding_digits=self.encoding_digits,
             use_catchall=self.use_catchall,
             catchall=self.catchall,
-            max_ncol=self.max_ncol,
+            max_nelements=self.max_nelements,
             nil=self.nil,
             tol=self.tol,
             **self.kwargs
@@ -387,7 +387,7 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         encoding_digits: int | None = 3,
         use_catchall: bool = False,
         catchall: str = '(others)',
-        max_ncol: int | None = 10000,
+        max_nelements: int | None = 1e+09,
         nil: float = 1e-07,
         tol: float = 1e-07,
         **kwargs
@@ -416,7 +416,7 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         encoding_digits : int, optional
         use_catchall : bool, optional
         catchall : str, optional
-        max_ncol : int, optional
+        max_nelements : int, optional
         nil : float, optional
         tol : float, optional
             Arguments passed to the parent `MIDRegressor` constructor. 
@@ -449,7 +449,7 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
             encoding_digits=encoding_digits,
             use_catchall=use_catchall,
             catchall=catchall,
-            max_ncol=max_ncol,
+            max_nelements=max_nelements,
             nil=nil,
             tol=tol,
             **kwargs

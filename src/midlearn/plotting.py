@@ -1,7 +1,7 @@
 # src/midlearn/plotting.py
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Any
 if TYPE_CHECKING:
     from .api import (
         MIDRegressor, 
@@ -184,7 +184,7 @@ def plot_importance(
         An explicit list of term names to display.
         If provided, only the terms in this list are plotted.
     max_nterms : int or None, default 30
-        The maximum number of terms to display when `style='barplot'`. 
+        The maximum number of terms to display when `style!='heatmap'`. 
         Terms are sorted by importance before truncation. If None, all terms are displayed.
     **kwargs : dict
         Additional keyword arguments passed to the main layer of the plot.
@@ -194,14 +194,14 @@ def plot_importance(
     plotnine.ggplot.ggplot
         A plotnine object representing the visualization of component importance.
     """
-    style = utils.match_arg(style, ['barplot', 'heatmap'])
+    style = utils.match_arg(style, ['barplot', 'heatmap', 'boxplot', 'violinplot', 'sinaplot'])
     imp_df = importance.importance.copy()
     if terms is not None:
         in_terms = imp_df['term'].isin(terms)
         imp_df = imp_df[in_terms]
+    if style != 'heatmap' and max_nterms is not None:
+        imp_df = imp_df.head(max_nterms)
     if style == 'barplot':
-        if max_nterms is not None:
-            imp_df = imp_df.head(max_nterms)
         p = (
             p9.ggplot(imp_df, p9.aes(x='term', y='importance'))
             + p9.geom_col(**kwargs)
@@ -233,6 +233,43 @@ def plot_importance(
             + p9.labs(x="", y="")
         )
         p += pt.scale_fill_theme(theme if theme is not None else 'grayscale')
+    elif style in ['boxplot', 'violinplot', 'sinaplot']:
+        terms = imp_df['term'].tolist()
+        dist_df = importance.predictions[terms].melt(
+            var_name='term', value_name='mid'
+        )
+        dist_df = dist_df.merge(
+            imp_df[['term', 'order', 'importance']], on='term'
+        )
+        dist_df['term'] = pd.Categorical(
+            dist_df['term'],
+            categories=terms[::-1],
+            ordered=True
+        )
+        p = p9.ggplot(dist_df, p9.aes(x='term', y='mid'))
+        if style == 'boxplot':
+            p += p9.geom_boxplot(**kwargs)
+        elif style == 'violinplot':
+            kwargs.setdefault('scale', 'width')
+            p += p9.geom_violin(**kwargs)
+        elif style == 'sinaplot':
+            kwargs.setdefault('scale', 'width')
+            kwargs.setdefault('method', 'density')
+            p += p9.geom_sina(**kwargs)
+        p = p + p9.coord_flip() + p9.labs(x = '')
+        if theme is not None:
+            theme = pt.color_theme(theme)
+            if style != 'sinaplot':
+                var_fill = 'order' if theme.theme_type == 'qualitative' else 'importance'
+                p = p + p9.aes(fill=var_fill, group='term') + pt.scale_fill_theme(theme)
+            else:
+                if theme.theme_type == 'qualitative':
+                    var_color = 'order'
+                elif theme.theme_type == 'sequential':
+                    var_color = 'importance'
+                else:
+                    var_color = 'mid'
+                p = p + p9.aes(color=var_color, group='term') + pt.scale_color_theme(theme)
     return p
 
 
@@ -242,8 +279,9 @@ def plot_breakdown(
     theme: str | pt.color_theme | None = None,
     terms: list[str] | None = None,
     max_nterms: int | None = 15,
-    catchall: str = 'others',
-    format: tuple[str, str] = ('%t=%v', '%t'),
+    catchall: str = '(others)',
+    label_format: list[str] | None = ['%t=%v', '%t:%t'],
+    format_args: dict[str, Any] = dict(),
     **kwargs
 ):
     """Visualize the decomposition of a single prediction into contributions from each component term with plotnine.
@@ -266,12 +304,16 @@ def plot_breakdown(
     max_nterms : int or None, default 15
         The maximum number of terms to display. Terms beyond this limit are 
         grouped into a single 'catchall' category. If None, all terms are displayed.
-    catchall : str, default 'others'
+    catchall : str, default '(others)'
         The label used for the grouped category when the number of terms exceeds `max_nterms`.
-    format : tuple[str, str], default ('%t=%v', '%t')
-        A tuple of two format strings for labeling terms on the y-axis.
-        The first string is for main effects (e.g., 'term=value'), and the second is for interaction terms (e.g., 'term').
-        %t is replaced by the term name, and %v is replaced by the predictor value.
+    label_format : list of str or None, default None
+        A list of one or two format strings for axis labels.
+        The first element is used for main effects (default: "%t=%v").
+        The second element is used for interactions (default: "%t:%t").
+        Use "%t" for the term name and "%v" for its formatted value.
+    format_args : dict or None, default None
+        A dictionary of additional arguments for formatting values (e.g., {'digits': 3}).
+        Common-and currently possible-keys include 'digits' for decimal precision.
     **kwargs : dict
         Additional keyword arguments passed to the main layer of the plot.
 
@@ -282,25 +324,50 @@ def plot_breakdown(
     """
     style = utils.match_arg(style, ['waterfall', 'barplot'])
     brk_df = breakdown.breakdown.copy()
-    use_catchall = False
     catchall_value = 0
+    use_catchall = False
     if terms is not None:
         in_terms = brk_df['term'].isin(terms)
-        catchall_value += brk_df[~in_terms]['mid'].sum()
-        brk_df = brk_df[in_terms]
+        resid = brk_df[~in_terms]['mid'].sum()
+        brk_df = brk_df[in_terms].copy()
+        if resid != 0:
+            catchall_value += resid
+            use_catchall = True
+    nmax = min(max_nterms, len(brk_df))
+    if nmax < len(brk_df):
+        resid = brk_df.iloc[max_nterms - 1:]['mid'].sum()
+        brk_df = brk_df.head(max_nterms - 1).copy()
+        catchall_value += resid
         use_catchall = True
-    if max_nterms is not None and max_nterms < (len(brk_df) + int(catchall_value > 0)):
-        catchall_value += brk_df.iloc[max_nterms - 1:]['mid'].sum()
-        brk_df = brk_df.head(max_nterms - 1)
-        use_catchall = True
-    if 'value' in brk_df.columns:
-        def _format_row(row):
-            _t = str(row['term'])
-            _v = str(row['value'])
-            fmt = format[1 if ':' in _t else 0]
-            return fmt.replace('%t', _t).replace('%v', _v)
-        brk_df['term'] = brk_df.apply(_format_row, axis=1)
-    if use_catchall > 0:
+    inputs = pd.DataFrame(breakdown.data).iloc[0]
+    values = dict()
+    for col, val in inputs.items():
+        if isinstance(val, (float, np.number)):
+            values[col] = f"{{:.{format_args.get('digits', 4)}f}}".format(val)
+        else:
+            values[col] = str(val)
+    if label_format is None or len(label_format) < 1:
+        label_format = ['%t=%V', '%t:%t']
+    if len(label_format) < 2:
+        label_format.append('%t:%t')
+    labels = []
+    for i in range(len(brk_df)):
+        term = brk_df.iloc[i]['term']
+        tags = str(term).split(':')
+        if len(tags) == 1:
+            label = label_format[0]
+            t = tags[0]
+            v = values.get(t, "")
+            label = label.replace('%t', t).replace('%v', v)
+        else:
+            label = label_format[1]
+            for j in range(min(len(tags), 2)):
+                t = tags[j]
+                v = values.get(t, "")
+                label = label.replace('%t', t, 1).replace('%v', v, 1)
+        labels.append(label)
+    brk_df['term'] = labels
+    if use_catchall:
         catchall_row = pd.DataFrame({'term': [catchall], 'mid': [catchall_value]})
         brk_df = pd.concat([brk_df, catchall_row], ignore_index=True)
     brk_df['term'] = pd.Categorical(
