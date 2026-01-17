@@ -320,7 +320,8 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
     def ratio(self):
         """The ratio of the sum of squared error between the target model predictions and the fitted values, to the sum of squared deviations of the target model predictions. Corresponds to 1 - R squared.
         """
-        return _r_interface._extract_and_convert(r_object=self.mid_, name='ratio').item()
+        val = _r_interface._extract_and_convert(r_object=self.mid_, name='ratio')
+        return {'working':val.item(0), 'response':val.item(1)} if len(val) > 1 else val.item()
 
     def terms(self, **kwargs):
         """Extract term labels from the fitted model. See midr's mid.terms().

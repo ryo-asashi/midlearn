@@ -1,5 +1,6 @@
 # src/midlearn/_r_interface.py
 
+import re
 import numpy as np
 import pandas as pd
 from rpy2 import robjects as ro
@@ -80,7 +81,7 @@ def _call_r_interpret(
     ]
     r_kwargs = {
         'object': ro.NULL,
-        'x': X,
+        'x': _sanitize_columns(X),
         'y': y,
         'weights': sample_weight,
         'k': ro.IntVector(k_list),
@@ -113,7 +114,7 @@ def _call_r_predict(
     """ Wrapper function for stats::predict() """
     r_kwargs = {
         'object': r_object,
-        'newdata': X,
+        'newdata': _sanitize_columns(X),
         'type': output_type,
         **kwargs
     }
@@ -167,11 +168,13 @@ def _call_r_mid_effect(
 
 def _call_r_mid_importance(
     r_object: ro.ListVector,
+    data: pd.DataFrame | None = None,
     **kwargs
 ) -> object:
     """ Wrapper function for midr::mid.importance() """
     r_kwargs = {
         'object': r_object,
+        'data': ro.NULL if data is None else _sanitize_columns(data),
         **kwargs
     }
     try:
@@ -184,12 +187,13 @@ def _call_r_mid_importance(
 
 def _call_r_mid_breakdown(
     r_object: ro.ListVector,
-    data: pd.DataFrame | None,
-    row: int | None,
+    data: pd.DataFrame | None = None,
+    row: int | None = None,
     **kwargs
 ) -> object:
     """ Wrapper function for midr::mid.breakdown() """
     if data is not None and data.shape[0] > 1:
+        data = _sanitize_columns(data)
         data = data.iloc[[row if row is not None else 0]]
         row = None
     r_kwargs = {
@@ -209,12 +213,14 @@ def _call_r_mid_breakdown(
 def _call_r_mid_conditional(
     r_object: ro.ListVector,
     variable: str,
+    data: pd.DataFrame | None = None,
     **kwargs
 ) -> object:
     """ Wrapper function for midr::mid.conditional() """
     r_kwargs = {
         'object': r_object,
         'variable': variable,
+        'data': ro.NULL if data is None else _sanitize_columns(data),
         **kwargs
     }
     try:
@@ -325,3 +331,35 @@ def _convert_r_color(color: str) -> str:
         hexrgb = [f"#{r:02X}{g:02X}{b:02X}" for r, g, b in mat]
         _R_COLOR_MAP = {color: rgb for color, rgb in zip(colors, hexrgb)}
     return _R_COLOR_MAP.get(color, color)
+
+def _convert_r_name(name: str) -> str:
+    r_reserved = {
+        "if", "else", "repeat", "while", "function", "for", "in", "next", "break", 
+        "TRUE", "FALSE", "NULL", "Inf", "NaN", "NA",
+        "NA_integer_", "NA_real_", "NA_complex_", "NA_character_"
+    }
+    name = str(name)
+    if not name:
+        return 'X'
+    name = re.sub(r'[^a-zA-Z0-9._]', '.', name)
+    if re.match(r'^[0-9]|^\.[0-9]', name):
+        name = 'X' + name
+    if name in r_reserved:
+        name = '.' + name
+    return name
+
+def _sanitize_columns(data: pd.DataFrame):
+    p_names = data.columns.tolist()
+    r_names = [_convert_r_name(c) for c in p_names]
+    seen = {}
+    unique_names = []
+    for name in r_names:
+        if name not in seen:
+            unique_names.append(name)
+            seen[name] = 0
+        else:
+            seen[name] += 1
+            unique_names.append(f"{name}.{seen[name]}")
+    data = data.copy()
+    data.columns = r_names
+    return data
