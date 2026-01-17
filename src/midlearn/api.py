@@ -682,6 +682,7 @@ class MIDConditional(object):
         self,
         estimator: MIDRegressor | MIDExplainer,
         variable: str,
+        pred_type: str = "response",
         **kwargs
     ):
         """Initialize the MIDConditional object.
@@ -696,8 +697,9 @@ class MIDConditional(object):
             Additional keyword arguments passed to the `midr::mid.conditional()` function in R.
         """
         self._obj = _r_interface._call_r_mid_conditional(
-            r_object = estimator.mid_,
-            variable = variable,
+            r_object  = estimator.mid_,
+            variable  = variable,
+            pred_type = pred_type,
             **kwargs
         )
         self.variable = variable

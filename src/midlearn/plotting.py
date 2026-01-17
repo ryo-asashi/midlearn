@@ -343,7 +343,7 @@ def plot_breakdown(
     values = dict()
     for col, val in inputs.items():
         if isinstance(val, (float, np.number)):
-            values[col] = f"{{:.{format_args.get('digits', 4)}f}}".format(val)
+            values[col] = f"{{:.{format_args.get('digits', 4)}g}}".format(val)
         else:
             values[col] = str(val)
     if label_format is None or len(label_format) < 1:

@@ -213,6 +213,7 @@ def _call_r_mid_breakdown(
 def _call_r_mid_conditional(
     r_object: ro.ListVector,
     variable: str,
+    pred_type: str,
     data: pd.DataFrame | None = None,
     **kwargs
 ) -> object:
@@ -221,6 +222,7 @@ def _call_r_mid_conditional(
         'object': r_object,
         'variable': variable,
         'data': ro.NULL if data is None else _sanitize_columns(data),
+        'type': pred_type,
         **kwargs
     }
     try:
