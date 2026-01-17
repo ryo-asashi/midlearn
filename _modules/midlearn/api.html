@@ -403,7 +403,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The ratio of the sum of squared error between the target model predictions and the fitted values, to the sum of squared deviations of the target model predictions. Corresponds to 1 - R squared.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">r_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mid_</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ratio&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">r_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mid_</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ratio&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;working&#39;</span><span class="p">:</span><span class="n">val</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;response&#39;</span><span class="p">:</span><span class="n">val</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="mi">1</span><span class="p">)}</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">val</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract term labels from the fitted model. See midr&#39;s mid.terms().</span>
@@ -787,6 +788,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">estimator</span><span class="p">:</span> <span class="n">MIDRegressor</span> <span class="o">|</span> <span class="n">MIDExplainer</span><span class="p">,</span>
         <span class="n">variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">pred_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the MIDConditional object.</span>
@@ -797,12 +799,15 @@
 <span class="sd">            The fitted MID model instance to use.</span>
 <span class="sd">        variable : str</span>
 <span class="sd">            The name of the feature for which to calculate conditional dependence.</span>
+<span class="sd">        pred_type: str</span>
+<span class="sd">            The scale on which to calculate and plot the conditional expectations.</span>
 <span class="sd">        **kwargs : dict</span>
 <span class="sd">            Additional keyword arguments passed to the `midr::mid.conditional()` function in R.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_call_r_mid_conditional</span><span class="p">(</span>
-            <span class="n">r_object</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">mid_</span><span class="p">,</span>
-            <span class="n">variable</span> <span class="o">=</span> <span class="n">variable</span><span class="p">,</span>
+            <span class="n">r_object</span>  <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">mid_</span><span class="p">,</span>
+            <span class="n">variable</span>  <span class="o">=</span> <span class="n">variable</span><span class="p">,</span>
+            <span class="n">pred_type</span> <span class="o">=</span> <span class="n">pred_type</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variable</span> <span class="o">=</span> <span class="n">variable</span></div>
