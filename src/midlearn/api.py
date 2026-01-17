@@ -693,6 +693,8 @@ class MIDConditional(object):
             The fitted MID model instance to use.
         variable : str
             The name of the feature for which to calculate conditional dependence.
+        pred_type: str
+            The scale on which to calculate and plot the conditional expectations.
         **kwargs : dict
             Additional keyword arguments passed to the `midr::mid.conditional()` function in R.
         """
