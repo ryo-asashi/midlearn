@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import plotnine as p9
 
+from . import _r_interface
 from . import plotting_theme as pt
 from . import utils
 
@@ -28,6 +29,7 @@ def plot_effect(
     data: pd.DataFrame | None = None,
     jitter: float | list[float] = 0.3,
     resolution: int | tuple[int, int] = 100,
+    lumped: bool = True,
     **kwargs
 ):
     """Visualize the estimated main or interaction effect of a fitted MID model with plotnine.
@@ -69,31 +71,42 @@ def plot_effect(
     """
     style = utils.match_arg(style, ['effect', 'data'])
     tags = term.split(':')
+    lumped = lumped and not main_effects
     if style == 'data':
         if not isinstance(jitter, list):
             jitter = [jitter] * len(tags)
         if data is None:
             raise ValueError("The 'data' argument is required when style='data'. Please provide the pandas.DataFrame to use for plotting.")
         data = data.copy()
-        terms = [term] + (tags if (len(tags) == 2 and main_effects) else [])
-        data['mid'] = (
-            estimator.r_predict(X=data, output_type='terms', terms=terms).sum(axis=1)
-            + (estimator.intercept if intercept else 0)
-        )
-    if len(tags) == 1:
-        eff_df = estimator.main_effects(term)
+        terms = [term]
+        if main_effects and len(tags) == 2:
+            terms.extend(tags)
+        data['mid'] = estimator.r_predict(X=data, output_type='link', terms=terms)
         if intercept:
-            eff_df['mid'] += estimator.intercept
-        p = p9.ggplot(data=eff_df, mapping=p9.aes(x=term, y='mid'))
-        enc = estimator._encoding_type(tag=term, order=1)
+            data['mid'] += estimator.intercept
+    if len(tags) == 1:
+        enc = estimator._encoder(tag=term, order=1)
+        ety = _r_interface._extract_and_convert(enc, 'type')[0]
+        if ety != 'factor' or lumped:
+            df = estimator.main_effects(term).copy()
+        else:
+            lvs = _r_interface._extract_and_convert(enc, 'envir')['olvs']
+            df = pd.DataFrame({
+                term: pd.Categorical(lvs, categories=lvs),
+                f'{term}_levels': list(range(1, len(lvs) + 1))
+            })
+            df['mid'] = estimator.effect(term=term, x=df)
+        if intercept:
+            df['mid'] += estimator.intercept
+        p = p9.ggplot(data=df, mapping=p9.aes(x=term, y='mid'))
         if style == 'effect':
-            if enc == 'linear':
+            if ety == 'linear':
                 p = p + p9.geom_line(**kwargs)
                 if theme is not None:
                     p = p + p9.aes(color='mid') + pt.scale_color_theme(theme)
-            elif enc == 'constant':
-                xval = eff_df[[f'{term}_min', f'{term}_max']].to_numpy().ravel('C')
-                yval = np.repeat(eff_df['mid'].to_numpy(), 2)
+            elif ety == 'constant':
+                xval = df[[f'{term}_min', f'{term}_max']].to_numpy().ravel('C')
+                yval = np.repeat(df['mid'].to_numpy(), 2)
                 path_df = pd.DataFrame({term: xval, 'mid': yval})
                 p += p9.geom_path(data=path_df, **kwargs)
                 if theme is not None:
@@ -103,37 +116,59 @@ def plot_effect(
                 if theme is not None:
                     p = p + p9.aes(fill='mid') + pt.scale_fill_theme(theme)
         if style == 'data':
-            jit = jitter[0] if enc == 'factor' else 0
+            jit = 0
+            if ety == 'factor':
+                jit = jitter[0]
+                env = _r_interface._extract_and_convert(enc, 'envir')
+                data[term] = env['transform'](data[term], lumped = lumped)
             p += p9.geom_jitter(p9.aes(y = "mid"), data=data, width=jit, height=0, **kwargs)
             if theme is not None:
                 p = p + p9.aes(color='mid') + pt.scale_color_theme(theme)
     elif len(tags) == 2:
         xtag, ytag = tags[0], tags[1]
-        try:
-            eff_df = estimator.interactions(term)
-        except KeyError as e:
-            try:
-                eff_df = estimator.interactions(f'{ytag}:{xtag}')
-            except KeyError:
-                raise e
+        xenc = estimator._encoder(tag=xtag, order=2)
+        yenc = estimator._encoder(tag=ytag, order=2)
+        xety = _r_interface._extract_and_convert(xenc, 'type')[0]
+        yety = _r_interface._extract_and_convert(yenc, 'type')[0]
+        if xety != 'factor' or lumped:
+            xfrm = _r_interface._extract_and_convert(xenc, 'frame')
+        else:
+            xlvs = _r_interface._extract_and_convert(xenc, 'envir')['olvs']
+            xfrm = pd.DataFrame({
+                xtag: pd.Categorical(xlvs, categories=xlvs),
+                f'{xtag}_levels': list(range(1, len(xlvs) + 1))
+            })
+        if yety != 'factor' or lumped:
+            yfrm = _r_interface._extract_and_convert(yenc, 'frame')
+        else:
+            ylvs = _r_interface._extract_and_convert(yenc, 'envir')['olvs']
+            yfrm = pd.DataFrame({
+                ytag: pd.Categorical(ylvs, categories=ylvs),
+                f'{ytag}_levels': list(range(1, len(ylvs) + 1))
+            })
+        xidx = np.tile(np.arange(len(xfrm)), len(yfrm))
+        yidx = np.repeat(np.arange(len(yfrm)), len(xfrm))
+        df = pd.concat(
+            [xfrm.iloc[xidx].reset_index(drop=True),
+             yfrm.iloc[yidx].reset_index(drop=True)], axis=1
+        )
+        df['mid'] = estimator.effect(term=term, x=df)
         if intercept:
-            eff_df['mid'] += estimator.intercept
+            df['mid'] += estimator.intercept
         if main_effects:
-            eff_df['mid'] += estimator.effect(term=xtag, x=eff_df) + estimator.effect(term=ytag, x=eff_df)
-        p = p9.ggplot(eff_df, p9.aes(x=xtag, y=ytag))
-        xenc = estimator._encoding_type(tag=xtag, order=2)
-        yenc = estimator._encoding_type(tag=ytag, order=2)
+            df['mid'] += estimator.effect(term=xtag, x=df) + estimator.effect(term=ytag, x=df)
+        p = p9.ggplot(df, p9.aes(x=xtag, y=ytag))
         if style == 'effect':
             xres, yres = (resolution, resolution) if isinstance(resolution, int) else (resolution, resolution)
-            if xenc == 'factor':
-                xval = eff_df[xtag].unique()
+            if xety == 'factor':
+                xval = xfrm[xtag].unique()
             else:
-                xmin, xmax = eff_df[f'{xtag}_min'].min(), eff_df[f'{xtag}_max'].max()
+                xmin, xmax = df[f'{xtag}_min'].min(), df[f'{xtag}_max'].max()
                 xval = np.linspace(xmin, xmax, xres)
-            if yenc == 'factor':
-                yval = eff_df[ytag].unique()
+            if yety == 'factor':
+                yval = yfrm[ytag].unique()
             else:
-                ymin, ymax = eff_df[f'{ytag}_min'].min(), eff_df[f'{ytag}_max'].max()
+                ymin, ymax = df[f'{ytag}_min'].min(), df[f'{ytag}_max'].max()
                 yval = np.linspace(ymin, ymax, yres)
             grid_df = pd.DataFrame({
                 xtag: np.repeat(xval, len(yval)),
@@ -147,8 +182,15 @@ def plot_effect(
             p += p9.geom_raster(p9.aes(x=xtag, y=ytag, fill='mid'), data=grid_df)
             p += pt.scale_fill_theme(theme if theme is not None else 'midr')
         if style == 'data':
-            xjit = jitter[0] if xenc == 'factor' else 0
-            yjit = jitter[1] if yenc == 'factor' else 0
+            xjit, yjit = 0, 0
+            if xety == 'factor':
+                xjit = jitter[0]
+                env = _r_interface._extract_and_convert(xenc, 'envir')
+                data[xtag] = env['transform'](data[xtag], lumped = lumped)
+            if yety == 'factor':
+                yjit = jitter[1]
+                env = _r_interface._extract_and_convert(yenc, 'envir')
+                data[ytag] = env['transform'](data[ytag], lumped = lumped)
             p += p9.geom_jitter(
                 mapping=p9.aes(color='mid'), data=data, width=xjit, height=yjit, **kwargs
             )
@@ -280,7 +322,7 @@ def plot_breakdown(
     terms: list[str] | None = None,
     max_nterms: int | None = 15,
     catchall: str = '(others)',
-    label_format: list[str] | None = ['%t=%v', '%t:%t'],
+    label_pattern: list[str] | None = ['%t=%v', '%t:%t'],
     format_args: dict[str, Any] = dict(),
     **kwargs
 ):
@@ -306,7 +348,7 @@ def plot_breakdown(
         grouped into a single 'catchall' category. If None, all terms are displayed.
     catchall : str, default '(others)'
         The label used for the grouped category when the number of terms exceeds `max_nterms`.
-    label_format : list of str or None, default None
+    label_pattern : list of str or None, default None
         A list of one or two format strings for axis labels.
         The first element is used for main effects (default: "%t=%v").
         The second element is used for interactions (default: "%t:%t").
@@ -346,21 +388,21 @@ def plot_breakdown(
             values[col] = f"{{:.{format_args.get('digits', 4)}g}}".format(val)
         else:
             values[col] = str(val)
-    if label_format is None or len(label_format) < 1:
-        label_format = ['%t=%V', '%t:%t']
-    if len(label_format) < 2:
-        label_format.append('%t:%t')
+    if label_pattern is None or len(label_pattern) < 1:
+        label_pattern = ['%t=%v', '%t:%t']
+    if len(label_pattern) < 2:
+        label_pattern.append('%t:%t')
     labels = []
     for i in range(len(brk_df)):
         term = brk_df.iloc[i]['term']
         tags = str(term).split(':')
         if len(tags) == 1:
-            label = label_format[0]
+            label = label_pattern[0]
             t = tags[0]
             v = values.get(t, "")
             label = label.replace('%t', t).replace('%v', v)
         else:
-            label = label_format[1]
+            label = label_pattern[1]
             for j in range(min(len(tags), 2)):
                 t = tags[j]
                 v = values.get(t, "")

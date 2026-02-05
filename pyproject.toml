@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "midlearn"
-version = "0.1.3"
+version = "0.1.4"
 authors = [
   { name="Ryoichi Asashiba", email="ryoichi.asashiba@gmail.com" },
 ]

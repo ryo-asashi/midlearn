@@ -1,6 +1,7 @@
 # src/midlearn/api.py
 
 from __future__ import annotations
+from typing import Literal
 import warnings
 
 import numpy as np
@@ -30,9 +31,11 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         centering_penalty: float = 1e+06,
         na_action: str | None = 'na.omit',
         verbosity: int = 1,
-        encoding_digits: int | None = 3,
-        use_catchall: bool = False,
-        catchall: str = '(others)',
+        split: Literal['quantile', 'uniform'] = 'quantile',
+        digits: int | None = 3,
+        lump: Literal['none', 'rank', 'order', 'auto'] = 'none',
+        others: str = 'others',
+        sep: str = '>',
         max_nelements: int | None = 1e+09,
         nil: float = 1e-07,
         tol: float = 1e-07,
@@ -89,15 +92,15 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         verbosity : int, optional
             The level of verbosity. 0: fatal, 1: warning (default), 2: info, 3: debug.
             Corresponds to the 'verbosity' argument in R.
-        encoding_digits : int or None, optional
+        digits : int or None, optional
             The rounding digits for encoding numeric variables (used when `kernel_type=1`).
             Corresponds to the 'encoding.digits' argument in R. Defaults to 3.
-        use_catchall : bool, optional
+        use_others : bool, optional
             If True, less frequent levels of qualitative variables are replaced 
-            by the 'catchall' level. Corresponds to 'use.catchall' in R. Defaults to False.
-        catchall : str, optional
-            The catchall level string to use when `use_catchall=True`.
-            Corresponds to the 'catchall' argument in R. Defaults to '(others)'.
+            by the 'others' level. Corresponds to 'use.others' in R. Defaults to False.
+        others : str, optional
+            The catchall level string to use when `lump` is not 'none'.
+            Corresponds to the 'others' argument in R. Defaults to 'others'.
         max_nelements : int or None, optional
             The maximum number of elements of the design matrix.
             Corresponds to the 'max.nelements' argument in R (midr >= 0.5.3). Defaults to 1e+09.
@@ -126,9 +129,11 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         self.centering_penalty = centering_penalty
         self.na_action = na_action
         self.verbosity = verbosity
-        self.encoding_digits = encoding_digits
-        self.use_catchall = use_catchall
-        self.catchall = catchall
+        self.split = split
+        self.digits = digits
+        self.lump = lump
+        self.others = others
+        self.sep = sep
         self.max_nelements = max_nelements
         self.nil = nil
         self.tol = tol
@@ -177,9 +182,11 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
             centering_penalty=self.centering_penalty,
             na_action=self.na_action,
             verbosity=self.verbosity,
-            encoding_digits=self.encoding_digits,
-            use_catchall=self.use_catchall,
-            catchall=self.catchall,
+            split=self.split,
+            digits=self.digits,
+            lump=self.lump,
+            others=self.others,
+            sep=self.sep,
             max_nelements=self.max_nelements,
             nil=self.nil,
             tol=self.tol,
@@ -340,12 +347,12 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         effects = _r_interface._extract_and_convert(r_object=self.mid_, name='interactions')
         return _r_interface._extract_and_convert(r_object=effects, name=term)
     
-    def _encoding_type(self, tag: str, order: int = 1):
+    def _encoder(self, tag: str, order: int = 1):
         obj = _r_interface._extract_and_convert(r_object=self.mid_, name='encoders')
         obj = _r_interface._extract_and_convert(r_object=obj, name='main.effects' if order == 1 else 'interactions')
         obj = _r_interface._extract_and_convert(r_object=obj, name=tag)
-        return _r_interface._extract_and_convert(r_object=obj, name='type')[0]
-
+        return obj
+    
     def importance(self, **kwargs):
         """Create MIDImportance object from the fitted estimator. Refer to midr's mid.importance().
         """
@@ -385,9 +392,11 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         centering_penalty: float = 1e+06,
         na_action: str | None = 'na.omit',
         verbosity: int = 1,
-        encoding_digits: int | None = 3,
-        use_catchall: bool = False,
-        catchall: str = '(others)',
+        split: Literal['quantile', 'uniform'] = 'quantile',
+        digits: int | None = 3,
+        lump: Literal['none', 'rank', 'order', 'auto'] = 'none',
+        others: str = 'others',
+        sep: str = '>',
         max_nelements: int | None = 1e+09,
         nil: float = 1e-07,
         tol: float = 1e-07,
@@ -414,9 +423,9 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         centering_penalty : float, optional
         na_action : str, optional
         verbosity : int, optional
-        encoding_digits : int, optional
-        use_catchall : bool, optional
-        catchall : str, optional
+        digits : int, optional
+        use_others : bool, optional
+        others : str, optional
         max_nelements : int, optional
         nil : float, optional
         tol : float, optional
@@ -447,9 +456,11 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
             centering_penalty=centering_penalty,
             na_action=na_action,
             verbosity=verbosity,
-            encoding_digits=encoding_digits,
-            use_catchall=use_catchall,
-            catchall=catchall,
+            split=split,
+            digits=digits,
+            lump=lump,
+            others=others,
+            sep=sep,
             max_nelements=max_nelements,
             nil=nil,
             tol=tol,
