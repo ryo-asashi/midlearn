@@ -53,7 +53,7 @@ $$
 
 To ensure the uniqueness and interpretability of each component, MID imposes centering and probability weighted minimum-norm constraints on the decomposition.
 
-By replicating a black-box model with this structured surrogate, we can quantify the "uninterpreted" variance (captured by $g_D(\mathbf{x})$) and derive a representation that captures the superior predictive power of machine learning without sacrificing actuarial clarity, as well as measure the complexity of the black-box model that can't be captured.
+By replicating a black-box model with this structured surrogate, we can quantify the "uninterpreted" variance and derive a representation that captures the superior predictive power of machine learning without sacrificing actuarial clarity, as well as measure the complexity of the black-box model that can't be captured.
 
 The theoretical foundations of MID are described in Iwasawa & Matsumori (2026) [Forthcoming], and the software implementation is detailed in [Asashiba et al. (2025)](https://arxiv.org/abs/2506.08338).
 
