@@ -61,6 +61,9 @@ def plot_effect(
         If a single integer, it is used for both axes of a 2D interaction plot. 
         If a tuple (int, int), it specifies the resolution for the first and 
         second predictor in an interaction, respectively.
+    lumped: bool, default True
+        Controls whether to use the encoded (reduced) levels or the original raw levels when plotting factor variables.
+        Automatically set to False when `main_effects=True` to ensure accurate summation of effects across detailed levels.
     **kwargs : dict
         Additional keyword arguments passed to the main layer of the plot.
     

@@ -92,15 +92,24 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         verbosity : int, optional
             The level of verbosity. 0: fatal, 1: warning (default), 2: info, 3: debug.
             Corresponds to the 'verbosity' argument in R.
+        split : {'quantile', 'uniform'}, default 'quantile'
+            The splitting strategy for numeric variables. 'quantile' creates bins/knots 
+            based on data density; 'uniform' creates equally spaced bins/knots.
+            Corresponds to the 'split' argument in R.
         digits : int or None, optional
             The rounding digits for encoding numeric variables (used when `kernel_type=1`).
             Corresponds to the 'encoding.digits' argument in R. Defaults to 3.
-        use_others : bool, optional
-            If True, less frequent levels of qualitative variables are replaced 
-            by the 'others' level. Corresponds to 'use.others' in R. Defaults to False.
+        lump : {'none', 'rank', 'order', 'auto'}, default 'none'
+            The lumping strategy for high-cardinality factors.
+            'rank' keeps the top k levels; 'order' merges adjacent levels preserving order;
+            'auto' selects based on variable type.
+            Corresponds to the 'lump' argument in R.
         others : str, optional
-            The catchall level string to use when `lump` is not 'none'.
+            The label for the catch-all level used when `lump` is active (e.g., 'rank').
             Corresponds to the 'others' argument in R. Defaults to 'others'.
+        sep : str, optional
+            The separator string used when merging ordered factor levels (e.g., "Level1>Level3").
+            Corresponds to the 'sep' argument in R. Defaults to '>'.
         max_nelements : int or None, optional
             The maximum number of elements of the design matrix.
             Corresponds to the 'max.nelements' argument in R (midr >= 0.5.3). Defaults to 1e+09.
@@ -403,6 +412,9 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         **kwargs
     ):
         """Create a surrogate MID model to explain a pre-trained black-box model.
+
+        Parameters
+        ----------
         estimator : scikit-learn compatible estimator
             The pre-trained black-box model to be explained.
         target_classes : str or list[str], optional
@@ -423,9 +435,11 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         centering_penalty : float, optional
         na_action : str, optional
         verbosity : int, optional
+        split : {'quantile', 'uniform'}, optional
         digits : int, optional
-        use_others : bool, optional
+        lump : {'none', 'rank', 'order', 'auto'}, optional
         others : str, optional
+        sep : str, optional
         max_nelements : int, optional
         nil : float, optional
         tol : float, optional
