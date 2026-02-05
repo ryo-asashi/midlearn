@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>midlearn.api &mdash; midlearn 0.1.3 documentation</title>
+  <title>midlearn.api &mdash; midlearn 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/logo.svg"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../_static/documentation_options.js?v=fd825880"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/custom.js?v=71f91e34"></script>
@@ -79,6 +79,7 @@
 <span></span><span class="c1"># src/midlearn/api.py</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -112,9 +113,11 @@
         <span class="n">centering_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e+06</span><span class="p">,</span>
         <span class="n">na_action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;na.omit&#39;</span><span class="p">,</span>
         <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">encoding_digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="n">use_catchall</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">catchall</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;(others)&#39;</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;quantile&#39;</span><span class="p">,</span> <span class="s1">&#39;uniform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;quantile&#39;</span><span class="p">,</span>
+        <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">lump</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;rank&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span>
+        <span class="n">others</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;others&#39;</span><span class="p">,</span>
+        <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span>
         <span class="n">max_nelements</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mf">1e+09</span><span class="p">,</span>
         <span class="n">nil</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-07</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-07</span><span class="p">,</span>
@@ -171,15 +174,24 @@
 <span class="sd">        verbosity : int, optional</span>
 <span class="sd">            The level of verbosity. 0: fatal, 1: warning (default), 2: info, 3: debug.</span>
 <span class="sd">            Corresponds to the &#39;verbosity&#39; argument in R.</span>
-<span class="sd">        encoding_digits : int or None, optional</span>
+<span class="sd">        split : {&#39;quantile&#39;, &#39;uniform&#39;}, default &#39;quantile&#39;</span>
+<span class="sd">            The splitting strategy for numeric variables. &#39;quantile&#39; creates bins/knots </span>
+<span class="sd">            based on data density; &#39;uniform&#39; creates equally spaced bins/knots.</span>
+<span class="sd">            Corresponds to the &#39;split&#39; argument in R.</span>
+<span class="sd">        digits : int or None, optional</span>
 <span class="sd">            The rounding digits for encoding numeric variables (used when `kernel_type=1`).</span>
 <span class="sd">            Corresponds to the &#39;encoding.digits&#39; argument in R. Defaults to 3.</span>
-<span class="sd">        use_catchall : bool, optional</span>
-<span class="sd">            If True, less frequent levels of qualitative variables are replaced </span>
-<span class="sd">            by the &#39;catchall&#39; level. Corresponds to &#39;use.catchall&#39; in R. Defaults to False.</span>
-<span class="sd">        catchall : str, optional</span>
-<span class="sd">            The catchall level string to use when `use_catchall=True`.</span>
-<span class="sd">            Corresponds to the &#39;catchall&#39; argument in R. Defaults to &#39;(others)&#39;.</span>
+<span class="sd">        lump : {&#39;none&#39;, &#39;rank&#39;, &#39;order&#39;, &#39;auto&#39;}, default &#39;none&#39;</span>
+<span class="sd">            The lumping strategy for high-cardinality factors.</span>
+<span class="sd">            &#39;rank&#39; keeps the top k levels; &#39;order&#39; merges adjacent levels preserving order;</span>
+<span class="sd">            &#39;auto&#39; selects based on variable type.</span>
+<span class="sd">            Corresponds to the &#39;lump&#39; argument in R.</span>
+<span class="sd">        others : str, optional</span>
+<span class="sd">            The label for the catch-all level used when `lump` is active (e.g., &#39;rank&#39;).</span>
+<span class="sd">            Corresponds to the &#39;others&#39; argument in R. Defaults to &#39;others&#39;.</span>
+<span class="sd">        sep : str, optional</span>
+<span class="sd">            The separator string used when merging ordered factor levels (e.g., &quot;Level1&gt;Level3&quot;).</span>
+<span class="sd">            Corresponds to the &#39;sep&#39; argument in R. Defaults to &#39;&gt;&#39;.</span>
 <span class="sd">        max_nelements : int or None, optional</span>
 <span class="sd">            The maximum number of elements of the design matrix.</span>
 <span class="sd">            Corresponds to the &#39;max.nelements&#39; argument in R (midr &gt;= 0.5.3). Defaults to 1e+09.</span>
@@ -208,9 +220,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">centering_penalty</span> <span class="o">=</span> <span class="n">centering_penalty</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">na_action</span> <span class="o">=</span> <span class="n">na_action</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">=</span> <span class="n">verbosity</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">encoding_digits</span> <span class="o">=</span> <span class="n">encoding_digits</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_catchall</span> <span class="o">=</span> <span class="n">use_catchall</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">catchall</span> <span class="o">=</span> <span class="n">catchall</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="n">split</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">digits</span> <span class="o">=</span> <span class="n">digits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lump</span> <span class="o">=</span> <span class="n">lump</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">others</span> <span class="o">=</span> <span class="n">others</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sep</span> <span class="o">=</span> <span class="n">sep</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_nelements</span> <span class="o">=</span> <span class="n">max_nelements</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nil</span> <span class="o">=</span> <span class="n">nil</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
@@ -260,9 +274,11 @@
             <span class="n">centering_penalty</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">centering_penalty</span><span class="p">,</span>
             <span class="n">na_action</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">na_action</span><span class="p">,</span>
             <span class="n">verbosity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span><span class="p">,</span>
-            <span class="n">encoding_digits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_digits</span><span class="p">,</span>
-            <span class="n">use_catchall</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_catchall</span><span class="p">,</span>
-            <span class="n">catchall</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">catchall</span><span class="p">,</span>
+            <span class="n">split</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">,</span>
+            <span class="n">digits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span>
+            <span class="n">lump</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lump</span><span class="p">,</span>
+            <span class="n">others</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">others</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span>
             <span class="n">max_nelements</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_nelements</span><span class="p">,</span>
             <span class="n">nil</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nil</span><span class="p">,</span>
             <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
@@ -423,12 +439,12 @@
         <span class="n">effects</span> <span class="o">=</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">r_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mid_</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;interactions&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">r_object</span><span class="o">=</span><span class="n">effects</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">term</span><span class="p">)</span>
     
-    <span class="k">def</span><span class="w"> </span><span class="nf">_encoding_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_encoder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">r_object</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mid_</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoders&#39;</span><span class="p">)</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">r_object</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;main.effects&#39;</span> <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;interactions&#39;</span><span class="p">)</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">r_object</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">r_object</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;type&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
+        <span class="k">return</span> <span class="n">obj</span>
+    
     <span class="k">def</span><span class="w"> </span><span class="nf">importance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create MIDImportance object from the fitted estimator. Refer to midr&#39;s mid.importance().</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -473,15 +489,20 @@
         <span class="n">centering_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e+06</span><span class="p">,</span>
         <span class="n">na_action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;na.omit&#39;</span><span class="p">,</span>
         <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">encoding_digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="n">use_catchall</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">catchall</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;(others)&#39;</span><span class="p">,</span>
+        <span class="n">split</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;quantile&#39;</span><span class="p">,</span> <span class="s1">&#39;uniform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;quantile&#39;</span><span class="p">,</span>
+        <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">lump</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;rank&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span>
+        <span class="n">others</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;others&#39;</span><span class="p">,</span>
+        <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span>
         <span class="n">max_nelements</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mf">1e+09</span><span class="p">,</span>
         <span class="n">nil</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-07</span><span class="p">,</span>
         <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-07</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a surrogate MID model to explain a pre-trained black-box model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">        estimator : scikit-learn compatible estimator</span>
 <span class="sd">            The pre-trained black-box model to be explained.</span>
 <span class="sd">        target_classes : str or list[str], optional</span>
@@ -502,9 +523,11 @@
 <span class="sd">        centering_penalty : float, optional</span>
 <span class="sd">        na_action : str, optional</span>
 <span class="sd">        verbosity : int, optional</span>
-<span class="sd">        encoding_digits : int, optional</span>
-<span class="sd">        use_catchall : bool, optional</span>
-<span class="sd">        catchall : str, optional</span>
+<span class="sd">        split : {&#39;quantile&#39;, &#39;uniform&#39;}, optional</span>
+<span class="sd">        digits : int, optional</span>
+<span class="sd">        lump : {&#39;none&#39;, &#39;rank&#39;, &#39;order&#39;, &#39;auto&#39;}, optional</span>
+<span class="sd">        others : str, optional</span>
+<span class="sd">        sep : str, optional</span>
 <span class="sd">        max_nelements : int, optional</span>
 <span class="sd">        nil : float, optional</span>
 <span class="sd">        tol : float, optional</span>
@@ -535,9 +558,11 @@
             <span class="n">centering_penalty</span><span class="o">=</span><span class="n">centering_penalty</span><span class="p">,</span>
             <span class="n">na_action</span><span class="o">=</span><span class="n">na_action</span><span class="p">,</span>
             <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span>
-            <span class="n">encoding_digits</span><span class="o">=</span><span class="n">encoding_digits</span><span class="p">,</span>
-            <span class="n">use_catchall</span><span class="o">=</span><span class="n">use_catchall</span><span class="p">,</span>
-            <span class="n">catchall</span><span class="o">=</span><span class="n">catchall</span><span class="p">,</span>
+            <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span>
+            <span class="n">digits</span><span class="o">=</span><span class="n">digits</span><span class="p">,</span>
+            <span class="n">lump</span><span class="o">=</span><span class="n">lump</span><span class="p">,</span>
+            <span class="n">others</span><span class="o">=</span><span class="n">others</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span>
             <span class="n">max_nelements</span><span class="o">=</span><span class="n">max_nelements</span><span class="p">,</span>
             <span class="n">nil</span><span class="o">=</span><span class="n">nil</span><span class="p">,</span>
             <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
