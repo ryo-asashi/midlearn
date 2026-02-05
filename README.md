@@ -10,9 +10,9 @@ The core objective of midlearn is to create a globally interpretable surrogate m
 ## Main Features
 
 -   **Scikit-learn Compatible API**: Fits seamlessly into existing workflows with familiar `.fit()` and `.predict()` methods.
--   **Functional Decomposition**: Deconstructs model predictions into an intercept, main effects $g_j(X_j)$, and interaction effects $g_{jk}(X_j, X_k)$.
--   **Model Fidelity**: Quantifies the quality of the explanation using the Uninterpreted Variation Ratio.
--   **Seamless Visualization**: Built-in support for plotnine-based interfaces to generate feature importance, dependence plots, and additive breakdowns.
+-   **Functional Decomposition**: Deconstructs model predictions into an intercept, main effects, and second-order interaction effects, minimizing the squared residuals.
+-   **Model Fidelity**: Quantifies the quality of the explanation and the complexity of the model using the Uninterpreted Variation Ratio.
+-   **Seamless Visualization**: Built-in support for **plotnine**-based interfaces to generate feature importance, dependence plots, and additive breakdowns.
 
 ## Installation
 
@@ -44,10 +44,16 @@ pip install git+https://github.com/ryo-asashi/midlearn.git
 
 ## Theoretical Foundation
 
-MID approximates a complex prediction function $f(\mathbf{x})$ as a sum of interpretable functions:
+MID is a functional decomposition method.
+It deconstructs a black-box prediction function $f(\mathbf{x})$ into several interpretable components: intercept $g_\emptyset$, main effects $g_j(x_j)$, and interactions $g_{jk}(x_j, x_k)$, minimizing the expected squared residual $\mathbf{E}\left[g_D(\mathbf{x})^2\right]$:
+
 $$
-f(\mathbf{x}) \approx g_\emptyset + \sum_{j} g_j(X_{j}) + \sum_{j < k} g_{jk}(X_{j}, X_{k}) + \dots + g_D(\mathbf{x})
+f(\mathbf{x}) = g_\emptyset + \sum_{j} g_j(x_{j}) + \sum_{j < k} g_{jk}(x_{j}, x_{k}) + g_D(\mathbf{x})
 $$
+
+To ensure the uniqueness and interpretability of each component, MID imposes centering and probability weighted minimum-norm constraints on the decomposition.
+
+By replicating a black-box model with this structured surrogate, we can quantify the "uninterpreted" variance (captured by $g_D(\mathbf{x})$) and derive a representation that captures the superior predictive power of machine learning without sacrificing actuarial clarity, as well as measure the complexity of the black-box model that can't be captured.
 
 The theoretical foundations of MID are described in Iwasawa & Matsumori (2026) [Forthcoming], and the software implementation is detailed in [Asashiba et al. (2025)](https://arxiv.org/abs/2506.08338).
 
