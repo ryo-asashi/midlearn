@@ -44,16 +44,16 @@ pip install git+https://github.com/ryo-asashi/midlearn.git
 
 ## Theoretical Foundation
 
-MID is a functional decomposition method.
-It deconstructs a black-box prediction function $f(\mathbf{x})$ into several interpretable components: intercept $g_\emptyset$, main effects $g_j(x_j)$, and interactions $g_{jk}(x_j, x_k)$, minimizing the expected squared residual $\mathbf{E}\left[g_D(\mathbf{x})^2\right]$:
+MID is a functional decomposition method that deconstructs a black-box prediction function $f(\mathbf{X})$ into several interpretable components: an intercept $g_\emptyset$, main effects $g_j(X_j)$, and second-order interactions $g_{jk}(X_j, X_k)$, minimizing the squared residuals $\mathbf{E}\left[g_D(\mathbf{X})^2\right]$:
 
 $$
-f(\mathbf{x}) = g_\emptyset + \sum_{j} g_j(x_{j}) + \sum_{j < k} g_{jk}(x_{j}, x_{k}) + g_D(\mathbf{x})
+f(\mathbf{X}) = g_\emptyset + \sum_{j} g_j(X_{j}) + \sum_{j < k} g_{jk}(X_{j},\;X_{k}) + g_D(\mathbf{X})
 $$
 
-To ensure the uniqueness and interpretability of each component, MID imposes centering and probability weighted minimum-norm constraints on the decomposition.
+To ensure the uniqueness and identifiability of each component, MID imposes centering and probability-weighted minimum-norm constraints on the decomposition.
 
-By replicating a black-box model with this structured surrogate, we can quantify the "uninterpreted" variance and derive a representation that captures the superior predictive power of machine learning without sacrificing actuarial clarity, as well as measure the complexity of the black-box model that can't be captured.
+By approximating a black-box model with this surrogate structure, we can derive a representation that retains the superior predictive power of machine learning models without sacrificing actuarial transparency.
+Furthermore, it allows us to quantify the "uninterpreted" variance, i.e., the portion of the model's logic that can't be captured by low-order effects, via the residual term $g_D(\mathbf{X})$.
 
 The theoretical foundations of MID are described in Iwasawa & Matsumori (2026) [Forthcoming], and the software implementation is detailed in [Asashiba et al. (2025)](https://arxiv.org/abs/2506.08338).
 
