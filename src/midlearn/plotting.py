@@ -123,7 +123,9 @@ def plot_effect(
             if ety == 'factor':
                 jit = jitter[0]
                 env = _r_interface._extract_and_convert(enc, 'envir')
-                data[term] = env['transform'](data[term], lumped = lumped)
+                data[term] = _r_interface._call_r_transform(
+                    env, data[term], lumped = lumped
+                )
             p += p9.geom_jitter(p9.aes(y = "mid"), data=data, width=jit, height=0, **kwargs)
             if theme is not None:
                 p = p + p9.aes(color='mid') + pt.scale_color_theme(theme)
@@ -189,11 +191,15 @@ def plot_effect(
             if xety == 'factor':
                 xjit = jitter[0]
                 env = _r_interface._extract_and_convert(xenc, 'envir')
-                data[xtag] = env['transform'](data[xtag], lumped = lumped)
+                data[xtag] = _r_interface._call_r_transform(
+                    env, data[xtag], lumped = lumped
+                )
             if yety == 'factor':
                 yjit = jitter[1]
                 env = _r_interface._extract_and_convert(yenc, 'envir')
-                data[ytag] = env['transform'](data[ytag], lumped = lumped)
+                data[ytag] = _r_interface._call_r_transform(
+                    env, data[ytag], lumped = lumped
+                )
             p += p9.geom_jitter(
                 mapping=p9.aes(color='mid'), data=data, width=xjit, height=yjit, **kwargs
             )

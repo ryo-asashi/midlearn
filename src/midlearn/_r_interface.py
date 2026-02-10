@@ -106,7 +106,7 @@ def _call_r_interpret(
         'split': split,
         'digits': digits,
         'lump': lump,
-        'ohters': others,
+        'others': others,
         'sep': sep,
         'max.nelements': max_nelements,
         'nil': nil,
@@ -249,6 +249,20 @@ def _call_r_mid_conditional(
     except RRuntimeError as e:
         raise RExecutionError(f"Error in R's midr::mid.conditional() function: {e}")
 
+def _call_r_transform(env, x, **kwargs):
+    try:
+        with conversion.localconverter(pandas2ri.converter + numpy2ri.converter + cv):
+            res = env['transform'](x, **kwargs)
+        if isinstance(res, ro.FactorVector):
+            return pd.Categorical.from_codes(
+                codes=np.asarray(res).astype(int) - 1,
+                categories=list(res.levels),
+                ordered=res.isordered
+            )
+        return res
+    except RRuntimeError as e:
+        raise RExecutionError(f"Error during R function call: {e}")
+
 
 def _extract_and_convert(
     r_object: ro.ListVector,
@@ -380,5 +394,5 @@ def _sanitize_columns(data: pd.DataFrame):
             seen[name] += 1
             unique_names.append(f"{name}.{seen[name]}")
     data = data.copy()
-    data.columns = r_names
+    data.columns = unique_names
     return data
