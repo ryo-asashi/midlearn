@@ -32,7 +32,7 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         na_action: str | None = 'na.omit',
         verbosity: int = 1,
         split: Literal['quantile', 'uniform'] = 'quantile',
-        digits: int | None = 3,
+        digits: int | None = None,
         lump: Literal['none', 'rank', 'order', 'auto'] = 'none',
         others: str = 'others',
         sep: str = '>',
@@ -98,7 +98,7 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
             Corresponds to the 'split' argument in R.
         digits : int or None, optional
             The rounding digits for encoding numeric variables (used when `kernel_type=1`).
-            Corresponds to the 'encoding.digits' argument in R. Defaults to 3.
+            Corresponds to the 'encoding.digits' argument in R. Defaults to None.
         lump : {'none', 'rank', 'order', 'auto'}, default 'none'
             The lumping strategy for high-cardinality factors.
             'rank' keeps the top k levels; 'order' merges adjacent levels preserving order;
@@ -402,7 +402,7 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         na_action: str | None = 'na.omit',
         verbosity: int = 1,
         split: Literal['quantile', 'uniform'] = 'quantile',
-        digits: int | None = 3,
+        digits: int | None = None,
         lump: Literal['none', 'rank', 'order', 'auto'] = 'none',
         others: str = 'others',
         sep: str = '>',
