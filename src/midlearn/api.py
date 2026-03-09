@@ -27,7 +27,7 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         model_terms: str | list[str] | None = None,
         singular_ok: bool = False,
         mode: int = 1,
-        method: int | None = None,
+        method: int | str | None = None,
         centering_penalty: float = 1e+06,
         na_action: str | None = 'na.omit',
         verbosity: int = 1,
@@ -78,10 +78,16 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
             centralization constraints are treated as penalties. If 2, 
             constraints are used to reduce the number of free parameters.
             Corresponds to the 'mode' argument in R.
-        method : int or None, optional
-            An integer specifying the method for solving the least squares problem.
-            Non-negative values are passed to RcppEigen::fastLmPure(), 
-            negative to stats::lm.fit(). None uses R default.
+        method : int, str or None, optional
+            An integer or a string specifying the method for solving the least squares problem.
+            Possible values include:
+            - 0 or "qr": column-pivoted QR
+            - 1 or "unpivoted.qr": unpivoted QR
+            - 2 or "llt": LLT Cholesky
+            - 3 or "ldlt": LDLT Cholesky
+            - 4 or "svd": singular value decomposition
+            - 5 or "eigen": eigenvalue-eigenvector decomposition
+            If None (default), the R default is used.
             Corresponds to the 'method' argument in R.
         centering_penalty : float, optional
             The penalty factor for centering constraints (used only when `mode=1`).
@@ -98,7 +104,7 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
             Corresponds to the 'split' argument in R.
         digits : int or None, optional
             The rounding digits for encoding numeric variables (used when `kernel_type=1`).
-            Corresponds to the 'encoding.digits' argument in R. Defaults to None.
+            Corresponds to the 'digits' argument in R. Defaults to None.
         lump : {'none', 'rank', 'order', 'auto'}, default 'none'
             The lumping strategy for high-cardinality factors.
             'rank' keeps the top k levels; 'order' merges adjacent levels preserving order;
@@ -397,7 +403,7 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         model_terms: str | list[str] | None = None,
         singular_ok: bool = False,
         mode: int = 1,
-        method: int | None = None,
+        method: int | str | None = None,
         centering_penalty: float = 1e+06,
         na_action: str | None = 'na.omit',
         verbosity: int = 1,
@@ -431,7 +437,7 @@ class MIDExplainer(MIDRegressor, MetaEstimatorMixin):
         model_terms : str or list[str], optional
         singular_ok : bool, optional
         mode : int, optional
-        method : int, optional
+        method : int or str, optional
         centering_penalty : float, optional
         na_action : str, optional
         verbosity : int, optional
