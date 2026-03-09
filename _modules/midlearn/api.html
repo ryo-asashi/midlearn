@@ -8,7 +8,7 @@
   <title>midlearn.api &mdash; midlearn 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
 
   
     <link rel="shortcut icon" href="../../_static/logo.svg"/>
@@ -109,12 +109,12 @@
         <span class="n">model_terms</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">singular_ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">method</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">centering_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e+06</span><span class="p">,</span>
         <span class="n">na_action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;na.omit&#39;</span><span class="p">,</span>
         <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">split</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;quantile&#39;</span><span class="p">,</span> <span class="s1">&#39;uniform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;quantile&#39;</span><span class="p">,</span>
-        <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">lump</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;rank&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span>
         <span class="n">others</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;others&#39;</span><span class="p">,</span>
         <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span>
@@ -160,10 +160,16 @@
 <span class="sd">            centralization constraints are treated as penalties. If 2, </span>
 <span class="sd">            constraints are used to reduce the number of free parameters.</span>
 <span class="sd">            Corresponds to the &#39;mode&#39; argument in R.</span>
-<span class="sd">        method : int or None, optional</span>
-<span class="sd">            An integer specifying the method for solving the least squares problem.</span>
-<span class="sd">            Non-negative values are passed to RcppEigen::fastLmPure(), </span>
-<span class="sd">            negative to stats::lm.fit(). None uses R default.</span>
+<span class="sd">        method : int, str or None, optional</span>
+<span class="sd">            An integer or a string specifying the method for solving the least squares problem.</span>
+<span class="sd">            Possible values include:</span>
+<span class="sd">            - 0 or &quot;qr&quot;: column-pivoted QR</span>
+<span class="sd">            - 1 or &quot;unpivoted.qr&quot;: unpivoted QR</span>
+<span class="sd">            - 2 or &quot;llt&quot;: LLT Cholesky</span>
+<span class="sd">            - 3 or &quot;ldlt&quot;: LDLT Cholesky</span>
+<span class="sd">            - 4 or &quot;svd&quot;: singular value decomposition</span>
+<span class="sd">            - 5 or &quot;eigen&quot;: eigenvalue-eigenvector decomposition</span>
+<span class="sd">            If None (default), the R default is used.</span>
 <span class="sd">            Corresponds to the &#39;method&#39; argument in R.</span>
 <span class="sd">        centering_penalty : float, optional</span>
 <span class="sd">            The penalty factor for centering constraints (used only when `mode=1`).</span>
@@ -180,7 +186,7 @@
 <span class="sd">            Corresponds to the &#39;split&#39; argument in R.</span>
 <span class="sd">        digits : int or None, optional</span>
 <span class="sd">            The rounding digits for encoding numeric variables (used when `kernel_type=1`).</span>
-<span class="sd">            Corresponds to the &#39;encoding.digits&#39; argument in R. Defaults to 3.</span>
+<span class="sd">            Corresponds to the &#39;digits&#39; argument in R. Defaults to None.</span>
 <span class="sd">        lump : {&#39;none&#39;, &#39;rank&#39;, &#39;order&#39;, &#39;auto&#39;}, default &#39;none&#39;</span>
 <span class="sd">            The lumping strategy for high-cardinality factors.</span>
 <span class="sd">            &#39;rank&#39; keeps the top k levels; &#39;order&#39; merges adjacent levels preserving order;</span>
@@ -485,12 +491,12 @@
         <span class="n">model_terms</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">singular_ok</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">method</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">centering_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e+06</span><span class="p">,</span>
         <span class="n">na_action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;na.omit&#39;</span><span class="p">,</span>
         <span class="n">verbosity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">split</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;quantile&#39;</span><span class="p">,</span> <span class="s1">&#39;uniform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;quantile&#39;</span><span class="p">,</span>
-        <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">lump</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;rank&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span>
         <span class="n">others</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;others&#39;</span><span class="p">,</span>
         <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span>
@@ -519,7 +525,7 @@
 <span class="sd">        model_terms : str or list[str], optional</span>
 <span class="sd">        singular_ok : bool, optional</span>
 <span class="sd">        mode : int, optional</span>
-<span class="sd">        method : int, optional</span>
+<span class="sd">        method : int or str, optional</span>
 <span class="sd">        centering_penalty : float, optional</span>
 <span class="sd">        na_action : str, optional</span>
 <span class="sd">        verbosity : int, optional</span>
