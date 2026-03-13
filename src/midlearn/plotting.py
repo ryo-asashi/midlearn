@@ -19,6 +19,39 @@ from . import _r_interface
 from . import plotting_theme as pt
 from . import utils
 
+# wrapper geom functions
+
+def _safe_geom(geom_class, mapping=None, data=None, extra_args=None, **kwargs):
+    valid_args = set()
+    valid_args.update(getattr(geom_class, 'DEFAULT_PARAMS', {}).keys())
+    valid_args.update(getattr(geom_class, 'DEFAULT_AES', {}).keys())
+    valid_args.update(getattr(geom_class, 'REQUIRED_AES', set()))
+    valid_args.update(['stat', 'position', 'show_legend', 'inherit_aes', 'na_rm', 'raster'])
+    if extra_args is not None: valid_args.update(extra_args)
+    safe_kwargs = {k: v for k, v in kwargs.items() if k in valid_args}
+    return geom_class(mapping=mapping, data=data, **safe_kwargs)
+
+def _geom_line(*args, **kwargs): return _safe_geom(p9.geom_line, *args, **kwargs)
+def _geom_point(*args, **kwargs): return _safe_geom(p9.geom_point, *args, **kwargs)
+def _geom_col(*args, **kwargs): return _safe_geom(p9.geom_col, *args, **kwargs)
+def _geom_rect(*args, **kwargs): return _safe_geom(p9.geom_rect, *args, **kwargs)
+def _geom_linerange(*args, **kwargs): return _safe_geom(p9.geom_linerange, *args, **kwargs)
+def _geom_vline(*args, **kwargs): return _safe_geom(p9.geom_vline, *args, **kwargs)
+def _geom_hline(*args, **kwargs): return _safe_geom(p9.geom_hline, *args, **kwargs)
+def _geom_path(*args, **kwargs): return _safe_geom(p9.geom_path, *args, **kwargs)
+def _geom_raster(*args, **kwargs): return _safe_geom(p9.geom_raster, *args, **kwargs)
+def _geom_tile(*args, **kwargs): return _safe_geom(p9.geom_tile, *args, **kwargs)
+def _geom_sina(*args, **kwargs):
+     return _safe_geom(p9.geom_sina, *args, extra_args=['scale', 'method', 'maxwidth', 'bw', 'adjust', 'kernel', 'trim'], **kwargs)
+def _geom_violin(*args, **kwargs):
+     return _safe_geom(p9.geom_violin, *args, extra_args=['scale', 'draw_quantiles', 'trim', 'bw', 'adjust', 'kernel'], **kwargs)
+def _geom_boxplot(*args, **kwargs):
+     return _safe_geom(p9.geom_boxplot, *args, extra_args=['notch', 'notchwidth', 'varwidth', 'outlier_alpha', 'outlier_color', 'outlier_shape', 'outlier_size', 'outlier_stroke'], **kwargs)
+def _geom_jitter(*args, **kwargs):
+     return _safe_geom(p9.geom_jitter, *args, extra_args=['width', 'height', 'random_state'], **kwargs)
+
+# midr plotting functions
+
 def plot_effect(
     estimator: MIDRegressor | MIDExplainer,
     term: str,
@@ -104,18 +137,18 @@ def plot_effect(
         p = p9.ggplot(data=df, mapping=p9.aes(x=term, y='mid'))
         if style == 'effect':
             if ety == 'linear':
-                p = p + p9.geom_line(**kwargs)
+                p = p + _geom_line(**kwargs)
                 if theme is not None:
                     p = p + p9.aes(color='mid') + pt.scale_color_theme(theme)
             elif ety == 'constant':
                 xval = df[[f'{term}_min', f'{term}_max']].to_numpy().ravel('C')
                 yval = np.repeat(df['mid'].to_numpy(), 2)
                 path_df = pd.DataFrame({term: xval, 'mid': yval})
-                p += p9.geom_path(data=path_df, **kwargs)
+                p += _geom_path(data=path_df, **kwargs)
                 if theme is not None:
                     p = p + p9.aes(color='mid') + pt.scale_color_theme(theme)
             else:
-                p += p9.geom_col(**kwargs)
+                p += _geom_col(**kwargs)
                 if theme is not None:
                     p = p + p9.aes(fill='mid') + pt.scale_fill_theme(theme)
         if style == 'data':
@@ -126,7 +159,7 @@ def plot_effect(
                 data[term] = _r_interface._call_r_transform(
                     env, data[term], lumped = lumped
                 )
-            p += p9.geom_jitter(p9.aes(y = "mid"), data=data, width=jit, height=0, **kwargs)
+            p += _geom_jitter(p9.aes(y = "mid"), data=data, width=jit, height=0, **kwargs)
             if theme is not None:
                 p = p + p9.aes(color='mid') + pt.scale_color_theme(theme)
     elif len(tags) == 2:
@@ -184,7 +217,7 @@ def plot_effect(
                 grid_df['mid'] += estimator.intercept
             if main_effects:
                 grid_df['mid'] += estimator.effect(term=xtag, x=grid_df) + estimator.effect(term=ytag, x=grid_df)
-            p += p9.geom_raster(p9.aes(x=xtag, y=ytag, fill='mid'), data=grid_df)
+            p += _geom_raster(p9.aes(x=xtag, y=ytag, fill='mid'), data=grid_df, **kwargs)
             p += pt.scale_fill_theme(theme if theme is not None else 'midr')
         if style == 'data':
             xjit, yjit = 0, 0
@@ -200,7 +233,7 @@ def plot_effect(
                 data[ytag] = _r_interface._call_r_transform(
                     env, data[ytag], lumped = lumped
                 )
-            p += p9.geom_jitter(
+            p += _geom_jitter(
                 mapping=p9.aes(color='mid'), data=data, width=xjit, height=yjit, **kwargs
             )
             if theme is not None:
@@ -255,7 +288,7 @@ def plot_importance(
     if style == 'barplot':
         p = (
             p9.ggplot(imp_df, p9.aes(x='term', y='importance'))
-            + p9.geom_col(**kwargs)
+            + _geom_col(**kwargs)
             + p9.coord_flip()
             + p9.labs(x="")
         )
@@ -280,7 +313,7 @@ def plot_importance(
         df['y'] = pd.Categorical(df['y'], categories=all_vars)
         p = (
             p9.ggplot(df, p9.aes(x='x', y='y', fill='importance'))
-            + p9.geom_tile(**kwargs)
+            + _geom_tile(**kwargs)
             + p9.labs(x="", y="")
         )
         p += pt.scale_fill_theme(theme if theme is not None else 'grayscale')
@@ -299,14 +332,14 @@ def plot_importance(
         )
         p = p9.ggplot(dist_df, p9.aes(x='term', y='mid'))
         if style == 'boxplot':
-            p += p9.geom_boxplot(**kwargs)
+            p += _geom_boxplot(**kwargs)
         elif style == 'violinplot':
             kwargs.setdefault('scale', 'width')
-            p += p9.geom_violin(**kwargs)
+            p += _geom_violin(**kwargs)
         elif style == 'sinaplot':
             kwargs.setdefault('scale', 'width')
             kwargs.setdefault('method', 'density')
-            p += p9.geom_sina(**kwargs)
+            p += _geom_sina(**kwargs)
         p = p + p9.coord_flip() + p9.labs(x = '')
         if theme is not None:
             theme = pt.color_theme(theme)
@@ -330,8 +363,8 @@ def plot_breakdown(
     theme: str | pt.color_theme | None = None,
     terms: list[str] | None = None,
     max_nterms: int | None = 15,
-    catchall: str = '(others)',
-    label_pattern: list[str] | None = ['%t=%v', '%t:%t'],
+    others: str = 'others',
+    pattern: list[str] | None = ['%t=%v', '%t:%t'],
     format_args: dict[str, Any] = dict(),
     **kwargs
 ):
@@ -351,13 +384,13 @@ def plot_breakdown(
     terms : list[str] or None, default None
         An explicit list of term names to display.
         If provided, only the terms in this list are plotted individually and
-        all other contributions are aggregated into a single category defined by `catchall`.
+        all other contributions are aggregated into a single category defined by `others`.
     max_nterms : int or None, default 15
         The maximum number of terms to display. Terms beyond this limit are 
-        grouped into a single 'catchall' category. If None, all terms are displayed.
-    catchall : str, default '(others)'
+        grouped into a single 'others' category. If None, all terms are displayed.
+    others : str, default 'others'
         The label used for the grouped category when the number of terms exceeds `max_nterms`.
-    label_pattern : list of str or None, default None
+    pattern : list of str or None, default None
         A list of one or two format strings for axis labels.
         The first element is used for main effects (default: "%t=%v").
         The second element is used for interactions (default: "%t:%t").
@@ -375,21 +408,21 @@ def plot_breakdown(
     """
     style = utils.match_arg(style, ['waterfall', 'barplot'])
     brk_df = breakdown.breakdown.copy()
-    catchall_value = 0
-    use_catchall = False
+    others_value = 0
+    use_others = False
     if terms is not None:
         in_terms = brk_df['term'].isin(terms)
         resid = brk_df[~in_terms]['mid'].sum()
         brk_df = brk_df[in_terms].copy()
         if resid != 0:
-            catchall_value += resid
-            use_catchall = True
+            others_value += resid
+            use_others = True
     nmax = min(max_nterms, len(brk_df))
     if nmax < len(brk_df):
         resid = brk_df.iloc[max_nterms - 1:]['mid'].sum()
         brk_df = brk_df.head(max_nterms - 1).copy()
-        catchall_value += resid
-        use_catchall = True
+        others_value += resid
+        use_others = True
     inputs = pd.DataFrame(breakdown.data).iloc[0]
     values = dict()
     for col, val in inputs.items():
@@ -397,30 +430,30 @@ def plot_breakdown(
             values[col] = f"{{:.{format_args.get('digits', 4)}g}}".format(val)
         else:
             values[col] = str(val)
-    if label_pattern is None or len(label_pattern) < 1:
-        label_pattern = ['%t=%v', '%t:%t']
-    if len(label_pattern) < 2:
-        label_pattern.append('%t:%t')
+    if pattern is None or len(pattern) < 1:
+        pattern = ['%t=%v', '%t:%t']
+    if len(pattern) < 2:
+        pattern.append('%t:%t')
     labels = []
     for i in range(len(brk_df)):
         term = brk_df.iloc[i]['term']
         tags = str(term).split(':')
         if len(tags) == 1:
-            label = label_pattern[0]
+            label = pattern[0]
             t = tags[0]
             v = values.get(t, "")
             label = label.replace('%t', t).replace('%v', v)
         else:
-            label = label_pattern[1]
+            label = pattern[1]
             for j in range(min(len(tags), 2)):
                 t = tags[j]
                 v = values.get(t, "")
                 label = label.replace('%t', t, 1).replace('%v', v, 1)
         labels.append(label)
     brk_df['term'] = labels
-    if use_catchall:
-        catchall_row = pd.DataFrame({'term': [catchall], 'mid': [catchall_value]})
-        brk_df = pd.concat([brk_df, catchall_row], ignore_index=True)
+    if use_others:
+        others_row = pd.DataFrame({'term': [others], 'mid': [others_value]})
+        brk_df = pd.concat([brk_df, others_row], ignore_index=True)
     brk_df['term'] = pd.Categorical(
         brk_df['term'], categories=brk_df['term'].iloc[::-1]
     )
@@ -432,17 +465,17 @@ def plot_breakdown(
         brk_df['ymin2'] = (brk_df['ymin'] - 1).clip(lower=brk_df['ymin'].min())
         p = (
             p9.ggplot(brk_df, p9.aes(y='term'))
-            + p9.geom_vline(xintercept=intercept, size=0.5)
-            + p9.geom_rect(p9.aes(xmin='xmin', xmax='xmax', ymin='ymin', ymax='ymax'), **kwargs)
-            + p9.geom_linerange(p9.aes(x='xmax', ymax='ymax', ymin='ymin2'), size=0.5)
+            + _geom_vline(xintercept=intercept, size=0.5)
+            + _geom_rect(p9.aes(xmin='xmin', xmax='xmax', ymin='ymin', ymax='ymax'), **kwargs)
+            + _geom_linerange(p9.aes(x='xmax', ymax='ymax', ymin='ymin2'), size=0.5)
             + p9.labs(x='yhat')
             + p9.scale_y_discrete(name="")
         )
     elif style == 'barplot':
         p = (
             p9.ggplot(brk_df, p9.aes(x='term', y='mid'))
-            + p9.geom_col(**kwargs)
-            + p9.geom_hline(yintercept=0, linetype='dashed', color='#808080')
+            + _geom_col(**kwargs)
+            + _geom_hline(yintercept=0, linetype='dashed', color='#808080')
             + p9.coord_flip()
             + p9.labs(x="")
         )
@@ -460,33 +493,54 @@ def plot_conditional(
     conditional: MIDConditional,
     style: Literal['ice', 'centered'] = 'ice',
     theme: str | pt.color_theme | None = None,
+    term: str | None = None,
+    var_alpha: str | None = None,
     var_color: str | None = None,
-    dots: bool = True,
+    var_linetype: str | None = None,
+    var_linewidth: str | None = None,
     reference: int = 0,
+    points: bool = True,
+    sample: list[Any] | None = None,
     **kwargs
 ):
-    """Visualize Individual Conditional Expectation (ICE) plots or Centered ICE (c-ICE) plots with plotnine.
-    This is a porting function for the R function `midr::ggmid.mid.conditional()`.
+    """Visualize Individual Conditional Expectation (ICE) curves derived from a fitted MID model with plotnine.
+    This is a porting function for the R function `midr::ggmid.midcon()`.
+
+    ICE plots are a model-agnostic tool for visualizing how a model's prediction for a 
+    single observation changes as one feature varies. This function plots one line for 
+    each observation in the data.
 
     Parameters
     ----------
     conditional : MIDConditional
-        A fitted :class:`MIDConditional` object containing the ICE data.
+        A fitted :class:`MIDConditional` object containing the ICE data to be visualized.
     style : {'ice', 'centered'}, default 'ice'
-        The plotting style.
-        'ice' plots raw predicted values against the predictor variable.
-        'centered' displays the **change in prediction** relative to a `reference` point,
-        by subtracting the prediction at the `reference` point for each individual observation.
+        The plotting style. 
+        'ice' (default) plots the raw ICE curves. 
+        'centered' creates the centered ICE (c-ICE) plot, where each curve is shifted 
+        to start at zero relative to a `reference` point, making it easier to compare the slopes.
     theme : str or pt.color_theme or None, default None
-        The color theme to use for the line colors.
+        The color theme to use for the plot. See `pt.color_theme` for details.
+    term : str or None, default None
+        An optional character string specifying an interaction term. If passed, 
+        the ICE curve for the specified term is plotted instead of the overall prediction.
+    var_alpha : str or None, default None
+        A variable name or expression to map to the alpha aesthetic.
     var_color : str or None, default None
-        The name of a column (from the original data) to map to the color aesthetic of the ICE lines. This helps visualize heterogeneity.
-    dots : bool, default True
-        If True, plots points for the observed (original) predictions for each sample.
+        A variable name or expression to map to the color aesthetic.
+    var_linetype : str or None, default None
+        A variable name or expression to map to the linetype aesthetic.
+    var_linewidth : str or None, default None
+        A variable name or expression to map to the linewidth aesthetic.
     reference : int, default 0
-        The 0-indexed sample point used as the reference prediction for centering when `style='centered'` is used.
+        An integer specifying the 0-based index of the evaluation point to use as 
+        the reference for centering when `style='centered'`. Negative values count from the end.
+    points : bool, default True
+        If True, points representing the actual predictions for each observation are plotted.
+    sample : list of Any or None, default None
+        An optional list specifying the IDs of observations to be plotted.
     **kwargs : dict
-        Additional keyword arguments passed to the main layer of the plot.
+        Additional optional parameters passed on to the main layer (geom_line and geom_point).
 
     Returns
     -------
@@ -497,23 +551,57 @@ def plot_conditional(
     variable = conditional.variable
     obs_df = conditional.observed.copy()
     con_df = conditional.conditional.copy()
+    values = conditional.values
+    yvar = 'yhat'
+
+    if term is not None:
+        if getattr(conditional, 'conditional_effects', None) is None:
+            raise ValueError("the term effects are not stored in the object")
+        yvar = f"mid({term})"
+        obs_df[yvar] = conditional.observed_effects[term]
+        con_df[yvar] = conditional.conditional_effects[term]
+
     if style == 'centered':
-        values = conditional.values
-        ref = values[min(len(values) - 1, max(0, reference))]
-        ref_df = con_df.loc[con_df[variable] == ref, ['.id', 'yhat']].rename(columns={'yhat': 'yref'})
+        if reference < 0:
+            reference = len(values) + reference
+        ref_idx = min(len(values) - 1, max(0, reference))
+        ref = values[ref_idx]
+        
+        ref_df = con_df.loc[con_df[variable] == ref, ['.id', yvar]].rename(columns={yvar: 'yref'})
         obs_df = pd.merge(obs_df, ref_df, on='.id')
         con_df = pd.merge(con_df, ref_df, on='.id')
-        obs_df['centered yhat'] = obs_df['yhat'] - obs_df['yref']
-        con_df['centered yhat'] = con_df['yhat'] - con_df['yref']
-    yvar = 'yhat' if style == 'ice' else 'centered yhat'
-    p = (
-        p9.ggplot(data=obs_df, mapping=p9.aes(x=variable, y=yvar))
-        + p9.geom_line(p9.aes(group='.id'), data=con_df, **kwargs)
-    )
-    if dots:
-        p += p9.geom_point()
-    if var_color is not None:
-        p += p9.aes(color=var_color)
-    if theme is not None:
+        
+        ynew = f"centered {yvar}"
+        obs_df[ynew] = obs_df[yvar] - obs_df['yref']
+        con_df[ynew] = con_df[yvar] - con_df['yref']
+        yvar = ynew
+
+    if sample is not None:
+        obs_df = obs_df[obs_df['.id'].isin(sample)]
+        con_df = con_df[con_df['.id'].isin(sample)]
+
+    if len(obs_df) == 0:
+        import warnings
+        warnings.warn("no observations found")
+        return None
+
+    cols_to_merge = [c for c in obs_df.columns if c not in con_df.columns or c == '.id']
+    con_df = pd.merge(con_df, obs_df[cols_to_merge], on='.id', how='left')
+    
+    mapping_args = {}
+    if var_alpha is not None: mapping_args['alpha'] = var_alpha
+    if var_color is not None: mapping_args['color'] = var_color
+    if var_linetype is not None: mapping_args['linetype'] = var_linetype
+    if var_linewidth is not None: mapping_args['linewidth'] = var_linewidth
+    
+    p = p9.ggplot(data=obs_df, mapping=p9.aes(x=variable, y=yvar, **mapping_args))
+
+    p += _geom_line(p9.aes(group='.id'), data=con_df, **kwargs)
+
+    if points:
+        p += _geom_point(data=obs_df, **kwargs)
+
+    if var_color is not None and theme is not None:
         p += pt.scale_color_theme(theme)
+
     return p
