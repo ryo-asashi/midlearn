@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>midlearn.plotting &mdash; midlearn 0.1.4 documentation</title>
+  <title>midlearn.plotting &mdash; midlearn 0.1.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/logo.svg"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=fd825880"></script>
+      <script src="../../_static/documentation_options.js?v=6e0256f3"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/custom.js?v=71f91e34"></script>
@@ -198,8 +198,8 @@
         <span class="k">if</span> <span class="n">main_effects</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">terms</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">r_predict</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="n">terms</span><span class="o">=</span><span class="n">terms</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">intercept</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">intercept</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">intercept</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">intercept</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">enc</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">_encoder</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">term</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">ety</span> <span class="o">=</span> <span class="n">_r_interface</span><span class="o">.</span><span class="n">_extract_and_convert</span><span class="p">(</span><span class="n">enc</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>

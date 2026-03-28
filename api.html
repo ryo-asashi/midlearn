@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Python API &mdash; midlearn 0.1.4 documentation</title>
+  <title>Python API &mdash; midlearn 0.1.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="_static/logo.svg"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=fd825880"></script>
+      <script src="_static/documentation_options.js?v=6e0256f3"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/custom.js?v=71f91e34"></script>
@@ -59,6 +59,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pythonapi/midlearn.MIDImportance.html">midlearn.MIDImportance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pythonapi/midlearn.MIDBreakdown.html">midlearn.MIDBreakdown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pythonapi/midlearn.MIDConditional.html">midlearn.MIDConditional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pythonapi/midlearn.MIDShapley.html">midlearn.MIDShapley</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a><ul>
@@ -66,6 +67,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pythonapi/midlearn.plot_importance.html">midlearn.plot_importance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pythonapi/midlearn.plot_breakdown.html">midlearn.plot_breakdown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pythonapi/midlearn.plot_conditional.html">midlearn.plot_conditional</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pythonapi/midlearn.plot_shapley.html">midlearn.plot_shapley</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#color-themes">Color Themes</a><ul>
@@ -133,6 +135,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="pythonapi/midlearn.MIDConditional.html#midlearn.MIDConditional" title="midlearn.MIDConditional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIDConditional</span></code></a>(estimator, variable[, pred_type])</p></td>
 <td><p>MID Conditional Expectations.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pythonapi/midlearn.MIDShapley.html#midlearn.MIDShapley" title="midlearn.MIDShapley"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIDShapley</span></code></a>(*args, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -151,6 +156,9 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="pythonapi/midlearn.plot_conditional.html#midlearn.plot_conditional" title="midlearn.plot_conditional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_conditional</span></code></a>(conditional[, style, ...])</p></td>
 <td><p>Visualize Individual Conditional Expectation (ICE) curves derived from a fitted MID model with plotnine.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pythonapi/midlearn.plot_shapley.html#midlearn.plot_shapley" title="midlearn.plot_shapley"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_shapley</span></code></a>(shapley[, style, instances, ...])</p></td>
+<td><p>Visualize the calculated SHAP Explanation object with the shap library.</p></td>
 </tr>
 </tbody>
 </table>

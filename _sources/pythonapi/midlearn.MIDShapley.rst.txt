@@ -1,0 +1,22 @@
+﻿midlearn.MIDShapley
+===================
+
+.. currentmodule:: midlearn
+
+.. autoclass:: MIDShapley
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MIDShapley.__init__
+   
+   
+
+   
+   
+   

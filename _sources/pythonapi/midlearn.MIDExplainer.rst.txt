@@ -32,6 +32,7 @@
       ~MIDExplainer.set_fit_request
       ~MIDExplainer.set_params
       ~MIDExplainer.set_score_request
+      ~MIDExplainer.shapley
       ~MIDExplainer.terms
    
    

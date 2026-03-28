@@ -1,0 +1,6 @@
+﻿midlearn.plot\_shapley
+======================
+
+.. currentmodule:: midlearn
+
+.. autofunction:: plot_shapley
