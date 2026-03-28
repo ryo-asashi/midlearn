@@ -25,68 +25,62 @@ def _require_shap():
             "The 'shap' library is required to use this feature; please install it using `pip install shap`"
         )
 
-if _SHAP_AVAILABLE:
-    class MIDShapley(object):
-        """MID-derived Shapley values.
+class MIDShapley(object):
+    """MID-derived Shapley values.
 
-        This object is returned by the `MIDRegressor.shapley()` method and holds a `shap.Explanation` object internally.
+    This object is returned by the `MIDRegressor.shapley()` method and holds a `shap.Explanation` object internally.
+    """
+    def __init__(
+        self,
+        estimator: MIDRegressor | MIDExplainer,
+        data: pd.DataFrame
+    ):
+        """Initialize the MIDShapley object.
+
+        Parameters
+        ----------
+        estimator : MIDRegressor or MIDExplainer
+            The fitted MID model instance from which to calculate MID-derived Shapley values.
+        data: pd.DataFrame
+            Data used to derive predictions.
         """
-        def __init__(
-            self,
-            estimator: MIDRegressor | MIDExplainer,
-            data: pd.DataFrame
-        ):
-            """Initialize the MIDShapley object.
-
-            Parameters
-            ----------
-            estimator : MIDRegressor or MIDExplainer
-                The fitted MID model instance from which to calculate MID-derived Shapley values.
-            data: pd.DataFrame
-                Data used to derive predictions.
-            """
-            _require_shap()
-            terms = estimator.terms()
-            preds = pd.DataFrame(estimator.r_predict(X=data, output_type='terms', terms=terms))
-            preds.columns = terms
-            xvars = list(dict.fromkeys(tag for term in terms for tag in term.split(":")))
-            shaps = pd.DataFrame(0.0, index=preds.index, columns=xvars)
-            for term in preds.columns:
-                tags = term.split(":")
-                if len(tags) == 1:
-                    shaps[term] += preds[term]
+        _require_shap()
+        terms = estimator.terms()
+        preds = pd.DataFrame(estimator.r_predict(X=data, output_type='terms', terms=terms))
+        preds.columns = terms
+        xvars = list(dict.fromkeys(tag for term in terms for tag in term.split(":")))
+        shaps = pd.DataFrame(0.0, index=preds.index, columns=xvars)
+        for term in preds.columns:
+            tags = term.split(":")
+            if len(tags) == 1:
+                shaps[term] += preds[term]
+            else:
+                for tag in tags:
+                    shaps[tag] += preds[term] / len(tags)
+        baseline = getattr(estimator, "intercept", 0.0)
+        data_reframed = _r_interface._call_r_model_reframe(
+            r_object=estimator.mid_,
+            data=data
+        )
+        data_vis = pd.DataFrame(index=data_reframed.index, columns=xvars)
+        for col in xvars:
+            if col in data_reframed.columns:
+                s = data_reframed[col]
+                if pd.api.types.is_bool_dtype(s):
+                    data_vis[col] = s.astype(int)
+                elif isinstance(s.dtype, pd.CategoricalDtype):
+                    data_vis[col] = s.cat.codes
                 else:
-                    for tag in tags:
-                        shaps[tag] += preds[term] / len(tags)
-            baseline = getattr(estimator, "intercept", 0.0)
-            data_reframed = _r_interface._call_r_model_reframe(
-                r_object=estimator.mid_,
-                data=data
-            )
-            data_vis = pd.DataFrame(index=data_reframed.index, columns=xvars)
-            for col in xvars:
-                if col in data_reframed.columns:
-                    s = data_reframed[col]
-                    if pd.api.types.is_bool_dtype(s):
-                        data_vis[col] = s.astype(int)
-                    elif isinstance(s.dtype, pd.CategoricalDtype):
-                        data_vis[col] = s.cat.codes
-                    else:
-                        try:
-                            data_vis[col] = pd.to_numeric(s)
-                        except (ValueError, TypeError):
-                            data_vis[col] = s
-            self.explanation_: shap.Explanation = shap.Explanation(
-                values=shaps.values,
-                base_values=np.full(preds.shape[0], baseline),
-                data=data_vis.values,
-                feature_names=list(shaps.columns)
-            )
-        
-else:
-    class MIDShapley:  # type: ignore
-        def __init__(self, *args, **kwargs):
-            _require_shap()
+                    try:
+                        data_vis[col] = pd.to_numeric(s)
+                    except (ValueError, TypeError):
+                        data_vis[col] = s
+        self.explanation_: shap.Explanation = shap.Explanation(
+            values=shaps.values,
+            base_values=np.full(preds.shape[0], baseline),
+            data=data_vis.values,
+            feature_names=list(shaps.columns)
+        )
 
 def plot_shapley(
     shapley: MIDShapley,
