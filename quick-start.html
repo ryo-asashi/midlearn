@@ -97,7 +97,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">midlearn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mid</span> 
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">plotnine</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">p9</span> <span class="c1"># require plotnine &gt;= 0.15.0</span>
-<span class="n">p9</span><span class="o">.</span><span class="n">theme_set</span><span class="p">(</span><span class="n">p9</span><span class="o">.</span><span class="n">theme_538</span><span class="p">(</span><span class="n">base_family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">))</span>
+<span class="n">p9</span><span class="o">.</span><span class="n">theme_set</span><span class="p">(</span><span class="n">p9</span><span class="o">.</span><span class="n">theme_bw</span><span class="p">(</span><span class="n">base_family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -2194,7 +2194,7 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generating predictions from the estimator...
 </pre></div>
 </div>
-<img alt="_images/72aec93fcee03b128c24eb645dcab4404deb34da2bf6040cde8c425423751065.png" src="_images/72aec93fcee03b128c24eb645dcab4404deb34da2bf6040cde8c425423751065.png" />
+<img alt="_images/226d2c9af0b51f5a3d4b78111979fb19df33e3776db3aa41cff4a2b857564e0d.png" src="_images/226d2c9af0b51f5a3d4b78111979fb19df33e3776db3aa41cff4a2b857564e0d.png" />
 </div>
 </div>
 </section>
@@ -2206,7 +2206,7 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate and plot overall feature importance (default bar plot and heatmap)</span>
 <span class="n">imp</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">importance</span><span class="p">()</span>
 <span class="n">p1</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">imp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_nterms</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">theme</span> <span class="o">=</span> <span class="s1">&#39;muted&#39;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="n">imp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_nterms</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">theme</span> <span class="o">=</span> <span class="s1">&#39;bluescale@qual&#39;</span><span class="p">)</span> <span class="o">+</span>
     <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Feature Imortance Plot&quot;</span><span class="p">)</span> <span class="o">+</span>
     <span class="n">p9</span><span class="o">.</span><span class="n">coord_flip</span><span class="p">()</span>
 <span class="p">)</span>
@@ -2215,7 +2215,7 @@ forceTheme('sk-container-id-2');</script></body></div></div>
     <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Feature Importance Map&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">p3</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">imp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_nterms</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#204080&quot;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.25</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;sina&#39;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="n">imp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_nterms</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s2">&quot;bluescale&quot;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">.25</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;sina&#39;</span><span class="p">)</span> <span class="o">+</span>
     <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Effect Distribution Plot&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">display</span><span class="p">(((</span><span class="n">p1</span> <span class="o">|</span> <span class="n">p2</span><span class="p">)</span> <span class="o">/</span> <span class="n">p3</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">p9</span><span class="o">.</span><span class="n">theme</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">legend_position</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">))</span>
@@ -2223,7 +2223,7 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/ed496124fa075c24f24d5c7e05df546a76a84c87e5b22285888eee263660ef15.png" src="_images/ed496124fa075c24f24d5c7e05df546a76a84c87e5b22285888eee263660ef15.png" />
+<img alt="_images/2c96daa9c51787c21597570db2a4727129618445d91660908c402289290d2da1.png" src="_images/2c96daa9c51787c21597570db2a4727129618445d91660908c402289290d2da1.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2232,7 +2232,7 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 <span class="n">plots</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">terms</span><span class="p">(</span><span class="n">interactions</span><span class="o">=</span><span class="kc">False</span><span class="p">)):</span>
     <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">explainer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">explainer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
         <span class="n">p9</span><span class="o">.</span><span class="n">lims</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">250</span><span class="p">])</span> <span class="o">+</span>
         <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span>
             <span class="n">subtitle</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Main Effect of </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -2253,7 +2253,7 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/b69e79b5e1a7774e925089be3aca97ec7a801eaf9d1a06884ab44b4ec024ff6f.png" src="_images/b69e79b5e1a7774e925089be3aca97ec7a801eaf9d1a06884ab44b4ec024ff6f.png" />
+<img alt="_images/200d0c44b441b84ea5b24b4928c597056aa1b2b7e8d17b06ccf1d814323ef8e2.png" src="_images/200d0c44b441b84ea5b24b4928c597056aa1b2b7e8d17b06ccf1d814323ef8e2.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2269,21 +2269,21 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 <span class="p">)</span>
 <span class="n">p2</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">explainer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-        <span class="s2">&quot;hour:feel_temp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;temp:feel_temp&quot;</span><span class="p">,</span>
         <span class="n">style</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
         <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;mako&#39;</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
         <span class="n">main_effects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">size</span><span class="o">=</span><span class="mi">2</span>
     <span class="p">)</span> <span class="o">+</span>
-    <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Total Effect of Hour and Feel_temp&quot;</span><span class="p">)</span>
+    <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Total Effect of Temp and Feel_temp&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">display</span><span class="p">((</span><span class="n">p1</span> <span class="o">|</span> <span class="n">p2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">p9</span><span class="o">.</span><span class="n">theme</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">legend_position</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/5852c3429c7b4341bb94c49d21213ad2ef691ee9056eb5f676ce02bb62d25665.png" src="_images/5852c3429c7b4341bb94c49d21213ad2ef691ee9056eb5f676ce02bb62d25665.png" />
+<img alt="_images/081c00bd26be8072322d148a6b254295716d3cc78b1618820378fcc6013866c9.png" src="_images/081c00bd26be8072322d148a6b254295716d3cc78b1618820378fcc6013866c9.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2292,7 +2292,9 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 <span class="n">plots</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
     <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">explainer</span><span class="o">.</span><span class="n">breakdown</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">X_test</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">format_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;digits&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span> <span class="o">+</span>
+        <span class="n">explainer</span><span class="o">.</span><span class="n">breakdown</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">X_test</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">format_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;digits&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="n">theme</span><span class="o">=</span><span class="s2">&quot;shap&quot;</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">theme</span><span class="p">(</span><span class="n">legend_position</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span> <span class="o">+</span>
         <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">subtitle</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Breakdown Plot for Row </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -2306,7 +2308,7 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/d8d7b34f5693c6159b06420e7efaa392ceba1ac452fa0b92fa750250362be2eb.png" src="_images/d8d7b34f5693c6159b06420e7efaa392ceba1ac452fa0b92fa750250362be2eb.png" />
+<img alt="_images/1246202d85ee93943cb743054bbd9e2bb8ca6ff7aa030d7e240633c53106ed8a.png" src="_images/1246202d85ee93943cb743054bbd9e2bb8ca6ff7aa030d7e240633c53106ed8a.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2314,21 +2316,25 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot individual conditional expectations (ICE) with color encoding</span>
 <span class="n">ice</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span>
     <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;hour&#39;</span><span class="p">,</span>
-    <span class="n">data</span><span class="o">=</span><span class="n">X_train</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">X_train</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">p1</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">ice</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">.1</span><span class="p">)</span> <span class="o">+</span>
-    <span class="n">p9</span><span class="o">.</span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">&quot;ICE Plot of Hour&quot;</span><span class="p">)</span>
+    <span class="n">ice</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">var_color</span><span class="o">=</span><span class="s1">&#39;temp&#39;</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;mako&#39;</span><span class="p">)</span> <span class="o">+</span>
+    <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ICE Plot of Hour&quot;</span><span class="p">,</span>
+        <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Colored by Temp&quot;</span>
+    <span class="p">)</span>
 <span class="p">)</span>
 <span class="n">p2</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">ice</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
         <span class="n">style</span><span class="o">=</span><span class="s1">&#39;centered&#39;</span><span class="p">,</span>
         <span class="n">var_color</span><span class="o">=</span><span class="s1">&#39;workingday&#39;</span><span class="p">,</span>
-        <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;muted&#39;</span>
+        <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;bluescale@qual&#39;</span><span class="p">,</span>
+        <span class="n">reference</span><span class="o">=</span><span class="mi">50</span>
     <span class="p">)</span> <span class="o">+</span>
     <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Centered ICE Plot of Hour&quot;</span><span class="p">,</span>
-        <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Colored by Workingday&quot;</span>
+        <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Centered at 50th Gridpoint&quot;</span>
     <span class="p">)</span> <span class="o">+</span>
     <span class="n">p9</span><span class="o">.</span><span class="n">theme</span><span class="p">(</span><span class="n">legend_position</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span>
 <span class="p">)</span>
@@ -2337,7 +2343,7 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/226884e90781646dcc58b4b3aaeba12e588d9b0dbb7e220065246238e60af322.png" src="_images/226884e90781646dcc58b4b3aaeba12e588d9b0dbb7e220065246238e60af322.png" />
+<img alt="_images/d885726c3ce53632aced0b1b9bca360fc108d0f521733b074df10b159397d828.png" src="_images/d885726c3ce53632aced0b1b9bca360fc108d0f521733b074df10b159397d828.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2346,14 +2352,16 @@ forceTheme('sk-container-id-2');</script></body></div></div>
 <span class="n">spv</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">shapley</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X_test</span><span class="p">)</span>
 <span class="n">spv</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;beeswarm&#39;</span><span class="p">)</span>
 <span class="n">spv</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;scatter&#39;</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span> <span class="s2">&quot;temp&quot;</span><span class="p">])</span>
-<span class="c1"># spv.plot(style=&#39;barplot&#39;)</span>
-<span class="c1"># spv.plot(style=&#39;waterfall&#39;, instances=0)</span>
+<span class="n">spv</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;barplot&#39;</span><span class="p">)</span>
+<span class="n">spv</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s1">&#39;waterfall&#39;</span><span class="p">,</span> <span class="n">instances</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/b263b750cf74a8b2efdaf65baa4b382567a2de1cd466daa00beaf3df90a87e7f.png" src="_images/b263b750cf74a8b2efdaf65baa4b382567a2de1cd466daa00beaf3df90a87e7f.png" />
-<img alt="_images/c68e3882945fcbeecbe2f7c5d27e0ef235b4c6995e90d938a2fd3acc696c8faf.png" src="_images/c68e3882945fcbeecbe2f7c5d27e0ef235b4c6995e90d938a2fd3acc696c8faf.png" />
+<img alt="_images/4d72d593bcfcbda9920e808572035fa8e66d733471c404632c8e90693200156a.png" src="_images/4d72d593bcfcbda9920e808572035fa8e66d733471c404632c8e90693200156a.png" />
+<img alt="_images/a1797cc3fe66b7d910b3fd133038b9ea07059a8374c3e4d259e115c5f956b2a5.png" src="_images/a1797cc3fe66b7d910b3fd133038b9ea07059a8374c3e4d259e115c5f956b2a5.png" />
+<img alt="_images/59bfbcecf42f76b4aa2f298e280c183edc63947f36342cd09cb767acc7c0b440.png" src="_images/59bfbcecf42f76b4aa2f298e280c183edc63947f36342cd09cb767acc7c0b440.png" />
+<img alt="_images/df979faeb52942777961a0d3f831d04009eeaa565646ad72d5e8dc5f4f58c8da.png" src="_images/df979faeb52942777961a0d3f831d04009eeaa565646ad72d5e8dc5f4f58c8da.png" />
 </div>
 </div>
 </section>

@@ -98,17 +98,28 @@
 <h1>midlearn.MIDShapley<a class="headerlink" href="#midlearn-midshapley" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="midlearn.MIDShapley">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">midlearn.</span></span><span class="sig-name descname"><span class="pre">MIDShapley</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/midlearn/shapley.html#MIDShapley"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#midlearn.MIDShapley" title="Link to this definition"></a></dt>
-<dd><dl class="py method">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">midlearn.</span></span><span class="sig-name descname"><span class="pre">MIDShapley</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="midlearn.MIDRegressor.html#midlearn.MIDRegressor" title="midlearn.MIDRegressor"><span class="pre">MIDRegressor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="midlearn.MIDExplainer.html#midlearn.MIDExplainer" title="midlearn.MIDExplainer"><span class="pre">MIDExplainer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/midlearn/shapley.html#MIDShapley"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#midlearn.MIDShapley" title="Link to this definition"></a></dt>
+<dd><p>MID-derived Shapley values.</p>
+<p>This object is returned by the <cite>MIDRegressor.shapley()</cite> method and holds a <cite>shap.Explanation</cite> object internally.</p>
+<dl class="py method">
 <dt class="sig sig-object py" id="midlearn.MIDShapley.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/midlearn/shapley.html#MIDShapley.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#midlearn.MIDShapley.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="midlearn.MIDRegressor.html#midlearn.MIDRegressor" title="midlearn.MIDRegressor"><span class="pre">MIDRegressor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="midlearn.MIDExplainer.html#midlearn.MIDExplainer" title="midlearn.MIDExplainer"><span class="pre">MIDExplainer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/midlearn/shapley.html#MIDShapley.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#midlearn.MIDShapley.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the MIDShapley object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimator</strong> (<a class="reference internal" href="midlearn.MIDRegressor.html#midlearn.MIDRegressor" title="midlearn.MIDRegressor"><em>MIDRegressor</em></a><em> or </em><a class="reference internal" href="midlearn.MIDExplainer.html#midlearn.MIDExplainer" title="midlearn.MIDExplainer"><em>MIDExplainer</em></a>) – The fitted MID model instance from which to calculate MID-derived Shapley values.</p></li>
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – Data used to derive predictions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#midlearn.MIDShapley.__init__" title="midlearn.MIDShapley.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#midlearn.MIDShapley.__init__" title="midlearn.MIDShapley.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(estimator, data)</p></td>
+<td><p>Initialize the MIDShapley object.</p></td>
 </tr>
 </tbody>
 </table>
