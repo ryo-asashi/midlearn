@@ -21,6 +21,7 @@ Model Interpretation
    MIDImportance
    MIDBreakdown
    MIDConditional
+   MIDShapley
 
 Plotting
 --------
@@ -32,6 +33,7 @@ Plotting
    plot_importance
    plot_breakdown
    plot_conditional
+   plot_shapley
 
 Color Themes
 ------------
