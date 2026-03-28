@@ -396,3 +396,29 @@ def _sanitize_columns(data: pd.DataFrame):
     data = data.copy()
     data.columns = unique_names
     return data
+
+
+def _call_r_model_reframe(
+    r_object: ro.ListVector,
+    data: pd.DataFrame | None = None
+) -> object:
+    """ Wrapper function for midr::model.reframe() """
+    r_kwargs = {
+        'object': r_object,
+        'data': ro.NULL if data is None else _sanitize_columns(data)
+    }
+    try:
+        with conversion.localconverter(pandas2ri.converter + numpy2ri.converter + cv):
+            element = midr.model_reframe(**r_kwargs)
+            res = pandas2ri.rpy2py(element)
+            for i, colname in enumerate(list(element.names)):
+                if not isinstance(element[i], ro.FactorVector):
+                    continue
+                res[colname] = pd.Categorical.from_codes(
+                    codes=res[colname].astype(int) - 1,
+                    categories=list(element[i].levels),
+                    ordered=element[i].isordered
+                )
+        return res
+    except RRuntimeError as e:
+        raise RExecutionError(f"Error in R's midr::model.reframe() function: {e}")

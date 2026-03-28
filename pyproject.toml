@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "midlearn"
-version = "0.1.5"
+version = "0.1.6"
 authors = [
   { name="Ryoichi Asashiba", email="ryoichi.asashiba@gmail.com" },
 ]
@@ -27,5 +27,12 @@ dependencies = [
     "mizani"
 ]
 
+[project.optional-dependencies]
+shap = [
+    "shap"
+]
+
 [project.urls]
+Documentation = "https://ryo-asashi.github.io/midlearn/"
+Repository = "https://github.com/ryo-asashi/midlearn/"
 Issues = "https://github.com/ryo-asashi/midlearn/issues"

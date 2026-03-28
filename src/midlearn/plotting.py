@@ -118,8 +118,8 @@ def plot_effect(
         if main_effects and len(tags) == 2:
             terms.extend(tags)
         data['mid'] = estimator.r_predict(X=data, output_type='link', terms=terms)
-        if intercept:
-            data['mid'] += estimator.intercept
+        if not intercept:
+            data['mid'] -= estimator.intercept
     if len(tags) == 1:
         enc = estimator._encoder(tag=term, order=1)
         ety = _r_interface._extract_and_convert(enc, 'type')[0]

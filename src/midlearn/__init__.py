@@ -10,6 +10,7 @@ except PackageNotFoundError:
 from .api import MIDRegressor, MIDExplainer, MIDImportance, MIDBreakdown, MIDConditional
 from .plotting import plot_effect, plot_importance, plot_breakdown, plot_conditional
 from .plotting_theme import color_theme, scale_color_theme, scale_fill_theme, scale_colour_theme
+from .shapley import MIDShapley, plot_shapley
 
 __all__ = [
     # from api
@@ -27,5 +28,8 @@ __all__ = [
     "color_theme",
     "scale_color_theme",
     "scale_colour_theme",
-    "scale_fill_theme"
+    "scale_fill_theme",
+    # from shapley
+    "MIDShapley",
+    "plot_shapley"
 ]

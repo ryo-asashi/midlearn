@@ -21,3 +21,7 @@ env/
 # IDE files
 .vscode/
 .idea/
+
+# README previews
+README_files/
+README.html

@@ -1,6 +1,8 @@
 # midlearn
 
 [![PyPI version](https://badge.fury.io/py/midlearn.svg)](https://badge.fury.io/py/midlearn)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://ryo-asashi.github.io/midlearn/)
+[![GitHub Repo](https://img.shields.io/badge/github-repo-000.svg?logo=github)](https://github.com/ryo-asashi/midlearn/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **midlearn** is a **rpy2**-based Python wrapper for the **midr** R package. It provides a model-agnostic framework for interpreting black-box models using a **scikit-learn** compatible API.

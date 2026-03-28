@@ -12,6 +12,7 @@ from sklearn.metrics import r2_score
 
 from . import _r_interface
 from . import plotting
+from . import shapley
 
 class MIDRegressor(BaseEstimator, RegressorMixin):
     """Stand-alone Maximum Interpretation Decomposition regressor.
@@ -382,6 +383,11 @@ class MIDRegressor(BaseEstimator, RegressorMixin):
         """Create MIDConditional object from the fitted estimator. Refer to midr's mid.conditional().
         """
         return MIDConditional(estimator=self, variable=variable, **kwargs)
+
+    def shapley(self, data: pd.DataFrame):
+        """Create MIDShapley object from the fitted estimator. Refer to midr's shapviz.mid() and the `shap` library.
+        """
+        return shapley.MIDShapley(estimator=self, data=data)
 
 MIDRegressor.plot = plotting.plot_effect
 
