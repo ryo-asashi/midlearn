@@ -15,12 +15,11 @@ from . import utils
 
 try:
     import shap
-    _SHAP_AVAILABLE = True
 except ImportError:
-    _SHAP_AVAILABLE = False
+    shap = None
 
 def _require_shap():
-    if not _SHAP_AVAILABLE:
+    if shap is None:
         raise ImportError(
             "The 'shap' library is required to use this feature; please install it using `pip install shap`"
         )
@@ -133,5 +132,4 @@ def plot_shapley(
     else:
         raise ValueError(f"The style '{style}' is not supported")
 
-if _SHAP_AVAILABLE:
-    MIDShapley.plot = plot_shapley  # type: ignore
+MIDShapley.plot = plot_shapley  # type: ignore
