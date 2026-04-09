@@ -25,7 +25,7 @@ def _require_shap():
         )
 
 class MIDShapley(object):
-    """MID-derived Shapley values.
+    """MID-Derived Shapley Values.
 
     This object is returned by the `MIDRegressor.shapley()` method and holds a `shap.Explanation` object internally.
     """
